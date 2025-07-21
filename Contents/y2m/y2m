@@ -1,0 +1,25 @@
+#!/bin/sh
+set -f  # 禁用路径扩展
+cd ~/sh/app/youtube2music
+
+while IFS='=' read -r key value; do
+  # 忽略空行和注释行
+  if [[ -n "$key" && ! "$key" =~ ^# ]]; then
+    export "$key"="$value"
+  fi
+done < config
+
+mkdir ./temp
+
+if [[ $1 == -p ]]; then
+    cp ./configs/$2 ./video_info
+    ./app "${@:3}"
+else
+    cp ./configs/$defalut ./video_info
+    ./app $@
+fi
+
+rm -f ./video_info
+rm -r ./temp
+
+set +f

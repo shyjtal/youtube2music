@@ -1,0 +1,11 @@
+volume=1.0
+artist=户晨风
+album=户侃
+composer=户晨风
+artwork=/Users/shijitao/Pictures/music/hcf.png
+output_path=/Users/shijitao/Desktop
+year=2025
+genre=Podcast
+medium=audio
+auto_compress=true
+compress_param=b128

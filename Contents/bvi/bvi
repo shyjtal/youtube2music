@@ -1,0 +1,17 @@
+#!/bin/bash
+if [[ -d "$HOME/sh/app/bilibili info" ]]; then
+    cd "$HOME/sh/app/bilibili info"
+else
+    cd "$HOME/sh/simple/bilibili info"
+fi
+
+if [ -z $1 ]; then
+    cat ./bv
+    ./app_auto
+elif [ $1 = "-h" ]; then
+    cat help
+elif [ $1 = "-c" ]; then
+    vim bv
+else
+    ./app "$@"
+fi

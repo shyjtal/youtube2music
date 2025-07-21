@@ -1,0 +1,12 @@
+cd ~/sh/app/media_compress
+
+if [[ $1 == -* ]]; then
+    if [ $1 == -c ]; then
+        vim config
+    elif [ $1 == -h ]; then
+        cat help
+    fi
+else
+    ./preprocess "$@"
+fi
+      

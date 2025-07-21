@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# 读取第一个参数作为 URL
+url="$1"
+
+# 提取 BV 号
+bv_id=$(echo "$url" | grep -oE 'BV[0-9A-Za-z]{10}')
+output_file="bv_info.txt"
+
+# 检查是否提取成功
+if [ -z "$bv_id" ]; then
+  echo "未提取到 BV 号，URL 是否正确？"
+  exit 1
+fi
+
+# 构造 API 地址
+api_url="https://api.bilibili.com/x/web-interface/view?bvid=$bv_id"
+
+# 请求 API 并赋值为 JSON
+json=$(curl -s "$api_url")
+
+# 分别提取字段为变量
+title=$(echo "$json" | jq -r '.data.title')
+up_name=$(echo "$json" | jq -r '.data.owner.name')
+up_uid=$(echo "$json" | jq -r '.data.owner.mid')
+view=$(echo "$json" | jq -r '.data.stat.view')
+like=$(echo "$json" | jq -r '.data.stat.like')
+pubdate=$(echo "$json" | jq -r '.data.pubdate | todate')
+
+# 输出结果
+{
+  echo "bv_title=$title"
+  echo "bv_up=$up_name"
+  echo "bv_uid=$up_uid"
+  echo "bv_playback=$view"
+  echo "bv_likes=$like"
+  echo "bv_release=$pubdate"
+} > "$output_file"
+
+cat bv_info.txt

@@ -1,0 +1,11 @@
+volume=2.0
+artist=u
+album=u
+composer=u
+artwork=/Users/shijitao/Pictures/music/u.png
+output_path=/Users/shijitao/Desktop
+year=2025
+genre=Other
+medium=audio
+auto_compress=true
+compress_param=b128

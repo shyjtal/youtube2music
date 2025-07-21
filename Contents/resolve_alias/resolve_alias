@@ -1,0 +1,41 @@
+#!/bin/bash
+
+resolve_alias() {
+    local input_path="$1"
+
+    # 确保路径存在
+    if [[ ! -e "$input_path" ]]; then
+        echo "错误: 文件不存在" >&2
+        exit 1
+    fi
+
+    # 检查是否为 Finder Alias
+    if xattr -p com.apple.FinderInfo "$input_path" &>/dev/null; then
+        # 使用 osascript 解析 Finder Alias
+        resolved=$(osascript -e "
+            on resolveAlias(theAlias)
+                tell application \"Finder\"
+                    set theItem to (original item of theAlias) as text
+                end tell
+                return POSIX path of theItem
+            end resolveAlias
+
+            set inputAlias to POSIX file \"$input_path\" as alias
+            resolveAlias(inputAlias)")
+        
+        # 去掉换行符，确保路径可用
+	resolved=$(echo "$resolved" | tr -d '\n' | xargs)
+	# 如果是文件夹，去掉末尾的 /
+        if [[ -d "$resolved" ]]; then
+            resolved="${resolved%/}"
+        fi
+    else
+        # 直接返回原路径
+        
+        resolved=$input_path
+    fi
+}
+
+resolve_alias "$1"
+echo "$resolved"
+

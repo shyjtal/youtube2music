@@ -1,0 +1,24 @@
+##################################
+if you don't use -*:
+$1,must -> url
+$2 -> music name
+else:
+-h -> get help
+-c -> update system config
+-l -> get video config list
+-a -> add or updata video config
+      $2,must -> video config key
+      $3 -> the new name of video config key
+-r -> update video analyze file
+-d -> download video
+      $2,must -> url
+      $3 -> video name
+-u -> upload to music
+      $2,must -> vidoe path
+      $3,advise -> music name
+##################################
+-p -> use video config
+      $2,must -> video config key
+if use -p $2, it must before every option
+
+##################################

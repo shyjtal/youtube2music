@@ -1,0 +1,166 @@
+#!/bin/sh
+set -f  # 禁用路径扩展
+
+# 读取配置文件并设置变量
+while IFS='=' read -r key value; do
+if [[ -n "$key" && ! "$key" =~ ^# ]]; then
+    export "$key"="$value"
+fi
+done < video_info
+
+while IFS='=' read -r key value; do
+if [[ -n "$key" && ! "$key" =~ ^# ]]; then
+    export "$key"="$value"
+fi
+done < config
+
+if [[ $analyze_app == "vscode" ]]; then
+    analyze_app="Visual Studio Code"
+fi
+
+if [ -n "$output_path_" ]; then
+    output_path=$output_path_
+fi
+
+if [[ "$medium" == "video" ]]; then
+    medium_type=mp4
+    load_type=ba+bv
+    download_type=mp4
+else
+    medium_type=m4a
+    load_type=ba
+    download_type=webm
+fi
+
+if [[ -d "$HOME/sh/app/bilibili info" ]]; then
+    bvi_type=app
+else
+    bvi_type=simple
+fi
+
+video_name_network=output
+
+if [[ $1 == -d ]]; then
+    url=$2
+    title=$3
+    cd temp
+    touch video_title.txt
+
+    video_name_network=$(yt-dlp --get-title "$url")
+    echo "$video_name_network" > video_title.txt
+
+    yt-dlp -o "input.$download_type" "$url" -f "$load_type"
+    if [[ "$medium" == "video" ]]; then
+        ffmpeg -i input.$download_type -c:v copy -c:a aac -b:a 192k -filter:a "volume=$volume" output.$medium_type
+    else
+        ffmpeg -i input.$download_type -vn -acodec aac -b:a 192k -filter:a "volume=$volume" output.$medium_type
+    fi
+    mv ./output.$medium_type "$output_path/$video_name_network.$medium_type"
+    cd ../
+
+    if [[ "$url" == https://www.bilibili.com/* ]]; then
+        $HOME/sh/bvi "$url"
+        cp $HOME/sh/$bvi_type/"bilibili info"/bv_info.txt ./temp/video_info.txt
+    elif [[ "$url" == https://www.youtube.com/* ]]; then
+        yt-dlp -j "$url" | jq -r '
+        "bv_title=" + .title,
+        "bv_up=" + .uploader,
+        "bv_uid=" + (.uploader_id // "N/A"),
+        "bv_playback=" + (.view_count | tostring),
+        "bv_likes=" + (.like_count | tostring),
+        "bv_release=" + (
+            .upload_date 
+            | capture("(?<y>....)(?<m>..)(?<d>..)") 
+            | "\(.y)-\(.m)-\(.d)T00:00:00Z"
+        )
+        ' > ./temp/video_info.txt
+    fi
+
+elif [[ $1 == -u ]]; then
+    url="$2"
+    title="$3"
+    if [ -z "$title" ]; then
+        filename=$(basename "$url")
+        title="${filename%.*}"  
+    fi
+ 
+    mv "$url" ./temp/output.m4a
+
+    if [ -e "$artwork" ]; then
+        ffmpeg -i ./temp/output.m4a -map 0:a -c copy ./temp/output_clean.m4a
+        mv ./temp/output_clean.m4a ./temp/output.m4a
+        upload=./temp/output_clean.m4a
+    fi
+    
+    while IFS='=' read -r key value; do
+    if [[ -n "$key" && ! "$key" =~ ^# ]]; then
+        export "$key"="$value"
+    fi
+    done < ./temp/video_info.txt
+    
+    ./analyze $bv_up
+
+    # 读取配置文件并设置变量
+    while IFS='=' read -r key value; do
+    if [[ -n "$key" && ! "$key" =~ ^# ]]; then
+        export "$key"="$value"
+    fi
+    done < video_info
+
+    AtomicParsley ./temp/output.m4a --artist "$artist" --album "$album" --composer "$composer" --title "$title" --year "$year" --genre "$genre" --artwork $artwork --overWrite
+    if [[ -z "$title" ]]; then
+        title=$bv_title
+    fi
+
+    if [[ $auto_compress == true ]]; then
+        if [[ -z $compress_param ]]; then
+            compress_param=b128
+        fi
+        $HOME/sh/mc $compress_param $HOME/sh/app/youtube2music/temp/output.m4a $HOME/sh/app/youtube2music/temp/output.m4a 
+    fi
+    
+    # osascript -e 'tell application "Music" to add POSIX file "/Users/shijitao/sh/app/youtube2music/temp/output.m4a"'
+    osascript -e "tell application \"Music\" to add POSIX file \"${HOME}/sh/app/youtube2music/temp/output.m4a\""
+    
+elif [[ $1 == -c ]]; then
+    vim config
+elif [[ $1 == -h ]]; then
+    cat help
+elif [[ $1 == -r ]]; then
+    if [[ -z $analyze_app ]]; then
+        vim analyze
+    else
+        open -a "$analyze_app" analyze
+    fi
+elif [[ $1 == -a ]]; then
+    config_name=$2
+    config_name_new=$3
+    cd ./configs
+    if [ ! -e "$config_name" ]; then
+        cp ./.template ./$config_name
+    fi
+    if [ ! -z "$config_name_new" ]; then
+        mv ./$config_name ./$config_name_new
+    else
+        vim ./$config_name
+    fi 
+elif [[ $1 == -l ]]; then
+    ls configs
+elif [[ $1 == -* ]]; then
+    echo "option false"
+else
+    export output_path_=$HOME/sh/app/youtube2music/temp
+    ./app -d $1
+
+    video_name=$2
+    video_name_network="$(cat temp/video_title.txt)"
+
+    
+    if [[ -z $video_name ]]; then
+        video_name="$video_name_network"
+    fi
+  
+    ./app -u "$HOME/sh/app/youtube2music/temp/$video_name_network.$medium_type" "$video_name"
+fi
+
+set +f
