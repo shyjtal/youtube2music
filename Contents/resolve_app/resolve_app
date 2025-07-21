@@ -1,0 +1,14 @@
+#!/bin/bash
+
+resolve_app() {
+
+    resolve_app="$1"
+    
+    if [[ $resolve_app == "vscode" ]]; then
+        resolve_app="Visual Studio Code"
+    fi
+
+}
+
+resolve_app "$1"
+echo "$resolve_app"

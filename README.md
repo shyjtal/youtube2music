@@ -39,3 +39,10 @@
 - **feature**:
     - add wza to autowire
     - add a new config that allow user to choose what app open analyze
+
+# version 1.1.2
+- **date: 2025/07/21**
+- **env: macOS 15**
+- **feature**:
+    - add a new config that allow user to choose what app open config
+    - integrate a tool(resolve_app) to resolve application from string in config
