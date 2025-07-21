@@ -2,7 +2,7 @@
 
 # Install
 
-## CL
+## CLI
 - git clone git@github.com:shyjtal/youtube2music.git
 - cd youtube2music
 - ./Install.command
