@@ -14,6 +14,9 @@ if [[ -n "$key" && ! "$key" =~ ^# ]]; then
 fi
 done < video_info
 
+IFS=',' read -ra video_name_allowed <<< "$video_name_allowed"
+
+
 analyze_app=$($HOME/sh/tools/resolve_app $analyze_app)
 config_app=$($HOME/sh/tools/resolve_app $config_app)
 
@@ -44,6 +47,7 @@ if [[ $1 == -d ]]; then
     title=$3
     cd temp
     touch video_title.txt
+    touch video_release_date.txt
 
     video_name_network=$(yt-dlp --get-title "$url")
     echo "$video_name_network" > video_title.txt
@@ -80,9 +84,9 @@ elif [[ $1 == -u ]]; then
     title="$3"
     if [ -z "$title" ]; then
         filename=$(basename "$url")
-        title="${filename%.*}"  
+        title="${filename%.*}"
     fi
- 
+    
     mv "$url" ./temp/output.m4a
 
     if [ -e "$artwork" ]; then
@@ -106,6 +110,37 @@ elif [[ $1 == -u ]]; then
     fi
     done < video_info
 
+    if [[ ! -z $name ]]; then
+        IFS='@' read -ra name_parts <<< "${name:1}"
+    fi
+    
+    for i in "${!name_parts[@]}"; do
+        found_in_allowed=false
+        name_part=${name_parts[$i]}
+    
+        for item in "${video_name_allowed[@]}"; do
+            if [[ "$name_part" == $item* ]]; then
+                found_in_allowed=true
+                break
+            fi
+        done
+        if [[ $found_in_allowed == "true" ]]; then
+            if [[ $item == "date" ]]; then
+                item_=${bv_release:0:10}
+            elif [[ $item == "title" ]]; then
+                item_=$title
+            fi
+            new_title=$new_title$item_${name_part#"$item"}
+        else
+            echo "this name donot exist in video_name_allowed"
+            exit;
+        fi 
+    done
+
+    if [[ ! -z $name ]]; then
+        title=$new_title
+    fi
+
     AtomicParsley ./temp/output.m4a --artist "$artist" --album "$album" --composer "$composer" --title "$title" --year "$year" --genre "$genre" --artwork $artwork --overWrite
     if [[ -z "$title" ]]; then
         title=$bv_title
@@ -122,7 +157,7 @@ elif [[ $1 == -u ]]; then
     osascript -e "tell application \"Music\" to add POSIX file \"${HOME}/sh/app/youtube2music/temp/output.m4a\""
     
 elif [[ $1 == -c ]]; then
-    if [[ -z $config_app ]]; then
+    if [[ -z $config_app || $config_app == "vim" ]]; then
         vim config
     else
         open -a "$config_app" config

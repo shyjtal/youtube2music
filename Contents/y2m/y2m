@@ -11,7 +11,16 @@ done < config
 
 mkdir ./temp
 
-if [[ $1 == -p ]]; then
+if [[ $1 == "-version" ]]; then
+    echo $version
+elif [[ $1 == "-readme" ]]; then
+    readme_app="$($HOME/sh/tools/resolve_app "$readme_app")"
+    if [[ -z $readme_app || "$readme_app" == "vim" ]]; then
+      vim README.md
+    else
+      open -a "$readme_app" README.md
+    fi
+elif [[ $1 == -p ]]; then
     cp ./configs/$2 ./video_info
     ./app "${@:3}"
 else

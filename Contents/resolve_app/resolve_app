@@ -6,6 +6,10 @@ resolve_app() {
     
     if [[ $resolve_app == "vscode" ]]; then
         resolve_app="Visual Studio Code"
+    elif [[ $resolve_app == "txt" ]]; then
+        resolve_app="TextEdit"
+    elif [[ $resolve_app == "terminal" ]]; then
+        resolve_app="vim"
     fi
 
 }

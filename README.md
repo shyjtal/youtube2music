@@ -16,7 +16,7 @@
 # version 1
 - **date: 2025/07/01**
 - **env: macOS 15**
-- **feature**:<br>
+- **feature**:
     - downloading audio from youtube and bilibili
     - uploaing audio to Apple Music
     - auto downloading and uploading meanwhile
@@ -46,3 +46,20 @@
 - **feature**:
     - add a new config that allow user to choose what app open config
     - integrate a tool(resolve_app) to resolve application from string in config
+
+# version 1.1.3
+- **date: 2025/07/21**
+- **env: macOS 15**
+- **feature**:
+    - add a new feature that get version of this app by -version 
+    - add a new feature that update README.md bt -readme
+
+# version 1.2
+- **date: 2025/07/22**
+- **env: macOS 15**
+- **feature**:
+    - allow users to configure video_name_allowed by -c to choose allowed video name formula
+    - add a new configuration in video_info(name) for allow user to custom video name formula,
+    just use "@$a_video_name_allowed$any_chars" can do it, such as "@date @title"
+    - video_name_allowed has two value: date and title
+    

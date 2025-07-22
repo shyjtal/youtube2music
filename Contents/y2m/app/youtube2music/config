@@ -1,4 +1,8 @@
-defalut=tltime
-config_app=terminal
-analyze_app=vscode
-config_app=vscode
+version=1.1.2
+defalut=hcf
+
+readme_app=vscode
+analyze_app=txt
+config_app=vim
+
+video_name_allowed=date,title
