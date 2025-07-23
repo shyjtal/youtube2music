@@ -40,30 +40,24 @@ else
     bvi_type=simple
 fi
 
+
 video_name_network=output
 
 if [[ $1 == -d ]]; then
     url=$2
     title=$3
     cd temp
+
+    # video_web_info
     touch video_title.txt
     touch video_release_date.txt
-
-    video_name_network=$(yt-dlp --get-title "$url")
-    echo "$video_name_network" > video_title.txt
+    touch video_info.txt
 
     yt-dlp -o "input.$download_type" "$url" -f "$load_type"
-    if [[ "$medium" == "video" ]]; then
-        ffmpeg -i input.$download_type -c:v copy -c:a aac -b:a 192k -filter:a "volume=$volume" output.$medium_type
-    else
-        ffmpeg -i input.$download_type -vn -acodec aac -b:a 192k -filter:a "volume=$volume" output.$medium_type
-    fi
-    mv ./output.$medium_type "$output_path/$video_name_network.$medium_type"
-    cd ../
 
     if [[ "$url" == https://www.bilibili.com/* ]]; then
         $HOME/sh/bvi "$url"
-        cp $HOME/sh/$bvi_type/"bilibili info"/bv_info.txt ./temp/video_info.txt
+        cp $HOME/sh/$bvi_type/"bilibili info"/bv_info.txt video_info.txt
     elif [[ "$url" == https://www.youtube.com/* ]]; then
         yt-dlp -j "$url" | jq -r '
         "bv_title=" + .title,
@@ -76,16 +70,29 @@ if [[ $1 == -d ]]; then
             | capture("(?<y>....)(?<m>..)(?<d>..)") 
             | "\(.y)-\(.m)-\(.d)T00:00:00Z"
         )
-        ' > ./temp/video_info.txt
+        ' > video_info.txt
     fi
+    
+    while IFS='=' read -r key value; do
+    if [[ -n "$key" && ! "$key" =~ ^# ]]; then
+        export "$key"="$value"
+    fi
+    done < video_info.txt
+
+    echo "$bv_title" > video_title.txt
+    
+    if [[ "$medium" == "video" ]]; then
+        ffmpeg -i input.$download_type -c:v copy -c:a aac -b:a 192k -filter:a "volume=$volume" output.$medium_type
+    else
+        ffmpeg -i input.$download_type -vn -acodec aac -b:a 192k -filter:a "volume=$volume" output.$medium_type
+    fi
+    mv ./output.$medium_type "$output_path/$bv_title.$medium_type"
+    cd ../
 
 elif [[ $1 == -u ]]; then
     url="$2"
     title="$3"
-    if [ -z "$title" ]; then
-        filename=$(basename "$url")
-        title="${filename%.*}"
-    fi
+    auto_define_title_name="$3"
     
     mv "$url" ./temp/output.m4a
 
@@ -101,8 +108,17 @@ elif [[ $1 == -u ]]; then
     fi
     done < ./temp/video_info.txt
     
-    ./analyze $bv_up
+    if [ -z "$title" ]; then
+        if [[ ! -z "$bv_title" ]]; then
+            title="$bv_title"
+        else
+            filename=$(basename "$url")
+            title="${filename%.*}"
+        fi
+    fi
 
+    ./analyze $bv_up
+    
     # 读取配置文件并设置变量
     while IFS='=' read -r key value; do
     if [[ -n "$key" && ! "$key" =~ ^# ]]; then
@@ -117,7 +133,6 @@ elif [[ $1 == -u ]]; then
     for i in "${!name_parts[@]}"; do
         found_in_allowed=false
         name_part=${name_parts[$i]}
-    
         for item in "${video_name_allowed[@]}"; do
             if [[ "$name_part" == $item* ]]; then
                 found_in_allowed=true
@@ -137,14 +152,11 @@ elif [[ $1 == -u ]]; then
         fi 
     done
 
-    if [[ ! -z $name ]]; then
-        title=$new_title
+    if [[ -z $auto_define_title_name ]]; then
+        auto_define_title_name=$new_title
     fi
 
-    AtomicParsley ./temp/output.m4a --artist "$artist" --album "$album" --composer "$composer" --title "$title" --year "$year" --genre "$genre" --artwork $artwork --overWrite
-    if [[ -z "$title" ]]; then
-        title=$bv_title
-    fi
+    AtomicParsley ./temp/output.m4a --artist "$artist" --album "$album" --composer "$composer" --title "$auto_define_title_name" --year "$year" --genre "$genre" --artwork $artwork --overWrite
 
     if [[ $auto_compress == true ]]; then
         if [[ -z $compress_param ]]; then
@@ -192,13 +204,8 @@ else
 
     video_name=$2
     video_name_network="$(cat temp/video_title.txt)"
-
-    
-    if [[ -z $video_name ]]; then
-        video_name="$video_name_network"
-    fi
   
-    ./app -u "$HOME/sh/app/youtube2music/temp/$video_name_network.$medium_type" "$video_name"
+    ./app -u "$HOME/sh/app/youtube2music/temp/$video_name_network.$medium_type" $video_name
 fi
 
 set +f

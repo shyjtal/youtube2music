@@ -62,4 +62,10 @@
     - add a new configuration in video_info(name) for allow user to custom video name formula,
     just use "@$a_video_name_allowed$any_chars" can do it, such as "@date @title"
     - video_name_allowed has two value: date and title
+
+# version 1.2.1
+- **date: 2025/07/22**
+- **env: macOS 15**
+- **feature**:
+    - fix a bug that user cannot self-define video name when -u
     

@@ -7,4 +7,6 @@ output_path=/Users/shijitao/Desktop
 year=2025
 genre=政治
 medium=audio
+auto_compress=true
+compress_param=b128
 name=@date @title
