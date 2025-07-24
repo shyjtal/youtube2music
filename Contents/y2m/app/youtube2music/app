@@ -16,7 +16,6 @@ done < video_info
 
 IFS=',' read -ra video_name_allowed <<< "$video_name_allowed"
 
-
 analyze_app=$($HOME/sh/tools/resolve_app $analyze_app)
 config_app=$($HOME/sh/tools/resolve_app $config_app)
 
@@ -39,7 +38,6 @@ if [[ -d "$HOME/sh/app/bilibili info" ]]; then
 else
     bvi_type=simple
 fi
-
 
 video_name_network=output
 
@@ -126,13 +124,16 @@ elif [[ $1 == -u ]]; then
     fi
     done < video_info
 
-    if [[ ! -z $name ]]; then
-        IFS='@' read -ra name_parts <<< "${name:1}"
+    if [[ -z $name ]]; then
+        name="@title"
     fi
     
+    IFS='@' read -ra name_parts <<< "${name:1}"
+
     for i in "${!name_parts[@]}"; do
         found_in_allowed=false
         name_part=${name_parts[$i]}
+        echo $name_part
         for item in "${video_name_allowed[@]}"; do
             if [[ "$name_part" == $item* ]]; then
                 found_in_allowed=true

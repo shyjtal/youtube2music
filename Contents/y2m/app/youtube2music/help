@@ -2,9 +2,14 @@
 if you don't use -*:
 $1,must -> url
 $2 -> music name
+
 else:
 -h -> get help
 -c -> update system config
+-config -> select version
+-readme -> edit readme
+
+##################################
 -l -> get video config list
 -a -> add or updata video config
       $2,must -> video config key
@@ -16,6 +21,7 @@ else:
 -u -> upload to music
       $2,must -> vidoe path
       $3,advise -> music name
+
 ##################################
 -p -> use video config
       $2,must -> video config key

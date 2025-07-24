@@ -64,8 +64,14 @@
     - video_name_allowed has two value: date and title
 
 # version 1.2.1
-- **date: 2025/07/22**
+- **date: 2025/07/23**
 - **env: macOS 15**
 - **feature**:
     - fix a bug that user cannot self-define video name when -u
+
+# version 1.2.2
+- **date: 2025/07/24**
+- **env: macOS 15**
+- **feature**:
+    - add a serial configurations in config that allow user to set a default action for auto compress videos when -u
     
