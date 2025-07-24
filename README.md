@@ -75,3 +75,8 @@
 - **feature**:
     - add a serial configurations in config for allow user to set default auto compress actions when -u
 
+# version 1.3
+- **date: 2025/07/25**
+- **env: macOS 15**
+- **feature**:
+    - user can multitask with this application just use singleton app

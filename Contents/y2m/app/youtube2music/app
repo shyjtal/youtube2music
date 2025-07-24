@@ -44,7 +44,7 @@ video_name_network=output
 if [[ $1 == -d ]]; then
     url=$2
     title=$3
-    cd temp
+    cd $temp
 
     # video_web_info
     touch video_title.txt
@@ -92,19 +92,19 @@ elif [[ $1 == -u ]]; then
     title="$3"
     auto_define_title_name="$3"
     
-    mv "$url" ./temp/output.m4a
+    mv "$url" ./$temp/output.m4a
 
     if [ -e "$artwork" ]; then
-        ffmpeg -i ./temp/output.m4a -map 0:a -c copy ./temp/output_clean.m4a
-        mv ./temp/output_clean.m4a ./temp/output.m4a
-        upload=./temp/output_clean.m4a
+        ffmpeg -i ./$temp/output.m4a -map 0:a -c copy ./$temp/output_clean.m4a
+        mv ./$temp/output_clean.m4a ./$temp/output.m4a
+        upload=./$temp/output_clean.m4a
     fi
     
     while IFS='=' read -r key value; do
     if [[ -n "$key" && ! "$key" =~ ^# ]]; then
         export "$key"="$value"
     fi
-    done < ./temp/video_info.txt
+    done < ./$temp/video_info.txt
     
     if [ -z "$title" ]; then
         if [[ ! -z "$bv_title" ]]; then
@@ -157,17 +157,17 @@ elif [[ $1 == -u ]]; then
         auto_define_title_name=$new_title
     fi
 
-    AtomicParsley ./temp/output.m4a --artist "$artist" --album "$album" --composer "$composer" --title "$auto_define_title_name" --year "$year" --genre "$genre" --artwork $artwork --overWrite
+    AtomicParsley ./$temp/output.m4a --artist "$artist" --album "$album" --composer "$composer" --title "$auto_define_title_name" --year "$year" --genre "$genre" --artwork $artwork --overWrite
 
     if [[ $auto_compress == true ]]; then
         if [[ -z $compress_param ]]; then
             compress_param=b128
         fi
-        $HOME/sh/mc $compress_param $HOME/sh/app/youtube2music/temp/output.m4a $HOME/sh/app/youtube2music/temp/output.m4a 
+        $HOME/sh/mc $compress_param $HOME/sh/app/youtube2music/$temp/output.m4a $HOME/sh/app/youtube2music/$temp/output.m4a 
     fi
     
-    # osascript -e 'tell application "Music" to add POSIX file "/Users/shijitao/sh/app/youtube2music/temp/output.m4a"'
-    osascript -e "tell application \"Music\" to add POSIX file \"${HOME}/sh/app/youtube2music/temp/output.m4a\""
+    # osascript -e 'tell application "Music" to add POSIX file "/Users/shijitao/sh/app/youtube2music/$temp/output.m4a"'
+    osascript -e "tell application \"Music\" to add POSIX file \"${HOME}/sh/app/youtube2music/$temp/output.m4a\""
     
 elif [[ $1 == -c ]]; then
     if [[ -z $config_app || $config_app == "vim" ]]; then
@@ -188,7 +188,7 @@ elif [[ $1 == -a ]]; then
     config_name_new=$3
     cd ./configs
     if [ ! -e "$config_name" ]; then
-        cp ./.template ./$config_name
+        cp ./.$template ./$config_name
     fi
     if [ ! -z "$config_name_new" ]; then
         mv ./$config_name ./$config_name_new
@@ -200,13 +200,13 @@ elif [[ $1 == -l ]]; then
 elif [[ $1 == -* ]]; then
     echo "option false"
 else
-    export output_path_=$HOME/sh/app/youtube2music/temp
+    export output_path_=$HOME/sh/app/youtube2music/$temp
     ./app -d $1
 
     video_name=$2
-    video_name_network="$(cat temp/video_title.txt)"
+    video_name_network="$(cat $temp/video_title.txt)"
   
-    ./app -u "$HOME/sh/app/youtube2music/temp/$video_name_network.$medium_type" $video_name
+    ./app -u "$HOME/sh/app/youtube2music/$temp/$video_name_network.$medium_type" $video_name
 fi
 
 set +f
