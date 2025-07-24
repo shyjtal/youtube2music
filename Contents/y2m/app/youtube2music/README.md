@@ -73,5 +73,5 @@
 - **date: 2025/07/24**
 - **env: macOS 15**
 - **feature**:
-    - add a serial configurations in config that allow user to set a default action for auto compress videos when -u
-    
+    - add a serial configurations in config for allow user to set default auto compress actions when -u
+
