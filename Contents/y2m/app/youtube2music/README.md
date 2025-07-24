@@ -79,4 +79,4 @@
 - **date: 2025/07/25**
 - **env: macOS 15**
 - **feature**:
-    - user can multitask with this application just use singleton app
+    - user can multitask with this application just like using a singleton app
