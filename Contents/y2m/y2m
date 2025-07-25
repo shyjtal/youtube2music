@@ -9,7 +9,15 @@ while IFS='=' read -r key value; do
   fi
 done < config
 
-mkdir ./temp
+temp_local="temp"
+
+while [[ -d "$temp_local" ]]; do
+  temp_local="temp"${i}
+  ((i++))
+done
+
+export temp=$temp_local
+mkdir $temp_local
 
 if [[ $1 == "-version" ]]; then
     echo $version
@@ -21,14 +29,13 @@ elif [[ $1 == "-readme" ]]; then
       open -a "$readme_app" README.md
     fi
 elif [[ $1 == -p ]]; then
-    cp ./configs/$2 ./video_info
+    cp ./configs/$2 ./$temp_local/video_info
     ./app "${@:3}"
 else
-    cp ./configs/$defalut ./video_info
+    cp ./configs/$defalut ./$temp_local/video_info
     ./app $@
 fi
 
-rm -f ./video_info
-rm -r ./temp
+rm -r $temp_local
 
 set +f
