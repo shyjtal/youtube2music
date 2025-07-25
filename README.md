@@ -80,3 +80,4 @@
 - **env: macOS 15**
 - **feature**:
     - user can multitask with this application just like using a singleton app
+    - update app 

@@ -12,7 +12,7 @@ while IFS='=' read -r key value; do
 if [[ -n "$key" && ! "$key" =~ ^# ]]; then
     export "$key"="$value"
 fi
-done < video_info
+done < ./$temp/video_info
 
 IFS=',' read -ra video_name_allowed <<< "$video_name_allowed"
 
@@ -48,7 +48,6 @@ if [[ $1 == -d ]]; then
 
     # video_web_info
     touch video_title.txt
-    touch video_release_date.txt
     touch video_info.txt
 
     yt-dlp -o "input.$download_type" "$url" -f "$load_type"
@@ -122,7 +121,7 @@ elif [[ $1 == -u ]]; then
     if [[ -n "$key" && ! "$key" =~ ^# ]]; then
         export "$key"="$value"
     fi
-    done < video_info
+    done < ./$temp/video_info
 
     if [[ -z $name ]]; then
         name="@title"
@@ -165,8 +164,7 @@ elif [[ $1 == -u ]]; then
         fi
         $HOME/sh/mc $compress_param $HOME/sh/app/youtube2music/$temp/output.m4a $HOME/sh/app/youtube2music/$temp/output.m4a 
     fi
-    
-    # osascript -e 'tell application "Music" to add POSIX file "/Users/shijitao/sh/app/youtube2music/$temp/output.m4a"'
+
     osascript -e "tell application \"Music\" to add POSIX file \"${HOME}/sh/app/youtube2music/$temp/output.m4a\""
     
 elif [[ $1 == -c ]]; then
@@ -205,7 +203,7 @@ else
 
     video_name=$2
     video_name_network="$(cat $temp/video_title.txt)"
-  
+    
     ./app -u "$HOME/sh/app/youtube2music/$temp/$video_name_network.$medium_type" $video_name
 fi
 

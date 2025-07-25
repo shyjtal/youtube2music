@@ -17,6 +17,7 @@ feng=("地下室之歌德" "这是个好事儿啊_" "小阿峰世间万物" "峰
 tltime=("天亮論政——章天亮")
 _2ye=("二爷故事")
 wza=("王志安")
+bbz=("比不中说篮球")
 
 up_name_input=$1
 found=false
@@ -38,5 +39,5 @@ if [[ $found == true ]]; then
   if [[ "$config_id" == _* ]]; then
     config_id="${config_id:1}"  # 从第1位开始取（跳过$）
   fi
-  cp ./configs/$config_id ./video_info
+  cp ./configs/$config_id ./$temp/video_info
 fi
