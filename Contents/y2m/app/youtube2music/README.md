@@ -81,3 +81,9 @@
 - **feature**:
     - user can multitask with this application just like using a singleton app
     
+# version 1.4
+- **date: 2025/07/26**
+- **env: macOS 15**
+- **feature**:
+    - modify the way mapping video uploader to local album config to more efficient(delete -r)
+    - add a new configurations in album config(matching) to set which video uploader map to local album config

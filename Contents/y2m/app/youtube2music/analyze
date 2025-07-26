@@ -1,43 +1,30 @@
 #!/bin/sh
-analyze_up=()
-for file in "./configs"/*; do
-    if [ -f "$file" ]; then    
-        filename=$(basename "$file")
-        if [[ "$filename" =~ ^[0-9] ]]; then
-            filename="_$filename"
-        fi
-        analyze_up+=("$filename")
-    fi
-done
-
-
-# if start with number, please add _ in it head
-hcf=("比英国人还阴" "户晨风的朋友圈" "户晨风系列" "户晨风的安捡委员" "琳与菲" "带兵法家" "户晨风的铁拳" "户晨风是个大聪明" "户晨风的冗余" "麦旋风土豆切片" "钢叉老太太" "户圣百古")
-feng=("地下室之歌德" "这是个好事儿啊_" "小阿峰世间万物" "峰哥男女大学堂" "峰哥大讲堂")
-tltime=("天亮論政——章天亮")
-_2ye=("二爷故事")
-wza=("王志安")
-bbz=("比不中说篮球")
 
 up_name_input=$1
 found=false
 
-for i in "${!analyze_up[@]}"; do
+for file in "./configs"/*; do  
+  unset matching
+  filename=$(basename "$file")
+  while IFS='=' read -r key value || [[ -n "$key" ]]; do
+    if [[ -n "$key" && ! "$key" =~ ^# ]]; then
+        export "$key=$value"
+    fi
+  done < "./configs/$filename"
+
+  IFS=',' read -ra matching <<< "$matching"
+
   if [[ $found == false ]]; then
-    config_id=${analyze_up[$i]}
-    eval "reference_param=(\"\${${config_id}[@]}\")"
-    for item in "${reference_param[@]}"; do
+    for item in "${matching[@]}"; do
       if [[ "$up_name_input" == "$item" ]]; then
-        found=true
-        break
+        cp ./configs/$filename ./$temp/video_info
+        exit;
       fi
     done
   fi
+
 done
 
-if [[ $found == true ]]; then
-  if [[ "$config_id" == _* ]]; then
-    config_id="${config_id:1}"  # 从第1位开始取（跳过$）
-  fi
-  cp ./configs/$config_id ./$temp/video_info
-fi
+
+  
+
