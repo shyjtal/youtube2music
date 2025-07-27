@@ -87,3 +87,9 @@
 - **feature**:
     - modify the way mapping video uploader to local album config to more efficient(delete -r)
     - add a new configurations in album config(matching) to set which video uploader map to local album config
+
+# version 1.4.1
+- **date: 2025/07/27**
+- **env: macOS 15**
+- **feature**:
+    - the configurations in album config(matching) can be use * to implement fuzzy matching
