@@ -1,0 +1,29 @@
+#!/bin/sh
+up_name_input=$1
+found=false
+
+for file in "./video_configs"/*; do  
+  unset matching
+  filename=$(basename "$file")
+  while IFS='=' read -r key value || [[ -n "$key" ]]; do
+    if [[ -n "$key" && ! "$key" =~ ^# ]]; then
+        export "$key=$value"
+    fi
+  done < "./video_configs/$filename"
+
+  IFS=',' read -ra matching <<< "$matching"
+
+  if [[ $found == false ]]; then
+    for item in "${matching[@]}"; do
+      if [[ "$up_name_input" == $item ]]; then
+        cp ./video_configs/$filename ./$temp/video_info
+        exit;
+      fi
+    done
+  fi
+
+done
+
+
+  
+

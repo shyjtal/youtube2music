@@ -111,7 +111,7 @@ elif [[ $1 == -u ]]; then
         fi
     fi
 
-    ./analyze $bv_up
+    ./mapper $bv_up
     
     # 读取配置文件并设置变量
     while IFS='=' read -r key value; do
@@ -171,7 +171,7 @@ elif [[ $1 == -h ]]; then
 elif [[ $1 == -a ]]; then
     config_name=$2
     config_name_new=$3
-    cd ./configs
+    cd ./video_configs
     if [ ! -e "$config_name" ]; then
         cp ./.$template ./$config_name
     fi
@@ -181,7 +181,7 @@ elif [[ $1 == -a ]]; then
         $HOME/sh/tools/open_file_with_app $config_name "$($HOME/sh/tools/resolve_app "$video_config_app")"
     fi 
 elif [[ $1 == -l ]]; then
-    ls configs
+    ls video_configs
 elif [[ $1 == -* ]]; then
     echo "option false"
 else

@@ -1,0 +1,12 @@
+volume=1.0
+artist=户晨风
+album=户侃
+composer=户晨风
+artwork=/Users/shijitao/Pictures/music/hcf.png
+output_path=/Users/shijitao/Desktop
+year=2025
+genre=Podcast
+medium=audio
+auto_compress=true
+compress_param=b128
+matching=户晨风*,麦有回音,比英国人还阴,琳与菲,带兵法家,麦旋风土豆切片,钢叉老太太,户圣百古,江户川晨峰
