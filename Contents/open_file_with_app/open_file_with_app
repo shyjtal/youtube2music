@@ -1,0 +1,16 @@
+#!/bin/bash
+
+open_file_with_app() {
+
+    open_file="$1"
+    open_app="$2"
+
+    if [[ -z $open_app || $open_app == "vim" || $open_app == "terminal" ]]; then
+        vim "$open_file"
+    else
+        open -a "$open_app" "$open_file"
+    fi
+
+}
+
+open_file_with_app "$1" "$2"
