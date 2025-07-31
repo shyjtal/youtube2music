@@ -1,12 +1,11 @@
-version=1.4.1
+version=1.4.2
 git_repo=youtube2music
-defalut=hcf
 
 readme_app=vscode
-analyze_app=txt
+video_config_app=txt
 config_app=vim
 
+defalut=hcf
 video_name_allowed=date,title
-
 auto_compress=true
 compress_param=b128

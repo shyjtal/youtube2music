@@ -1,5 +1,5 @@
 dev/bvi
-mc
+mcp
 brew/ffmpeg
 brew/yt-dlp
 tool/resolve_alias

@@ -12,12 +12,9 @@ while IFS='=' read -r key value; do
 if [[ -n "$key" && ! "$key" =~ ^# ]]; then
     export "$key"="$value"
 fi
-done < ./$temp/video_info
+done < ./$temp/video_config
 
 IFS=',' read -ra video_name_allowed <<< "$video_name_allowed"
-
-analyze_app=$($HOME/sh/tools/resolve_app $analyze_app)
-config_app=$($HOME/sh/tools/resolve_app $config_app)
 
 if [ -n "$output_path_" ]; then
     output_path=$output_path_
@@ -36,7 +33,7 @@ fi
 if [[ -d "$HOME/sh/app/bilibili info" ]]; then
     bvi_type=app
 else
-    bvi_type=simple
+    bvi_type=dev
 fi
 
 video_name_network=output
@@ -121,7 +118,7 @@ elif [[ $1 == -u ]]; then
     if [[ -n "$key" && ! "$key" =~ ^# ]]; then
         export "$key"="$value"
     fi
-    done < ./$temp/video_info
+    done < ./$temp/video_config
 
     if [[ -z $name ]]; then
         name="@title"
@@ -162,25 +159,15 @@ elif [[ $1 == -u ]]; then
         if [[ -z $compress_param ]]; then
             compress_param=b128
         fi
-        $HOME/sh/mc $compress_param $HOME/sh/app/youtube2music/$temp/output.m4a $HOME/sh/app/youtube2music/$temp/output.m4a 
+        $HOME/sh/mcp $compress_param $HOME/sh/app/youtube2music/$temp/output.m4a $HOME/sh/app/youtube2music/$temp/output.m4a 
     fi
 
     osascript -e "tell application \"Music\" to add POSIX file \"${HOME}/sh/app/youtube2music/$temp/output.m4a\""
     
 elif [[ $1 == -c ]]; then
-    if [[ -z $config_app || $config_app == "vim" ]]; then
-        vim config
-    else
-        open -a "$config_app" config
-    fi
+    $HOME/sh/tools/open_file_with_app config "$($HOME/sh/tools/resolve_app "$config_app")"
 elif [[ $1 == -h ]]; then
     cat help
-elif [[ $1 == -r ]]; then
-    if [[ -z $analyze_app ]]; then
-        vim analyze
-    else
-        open -a "$analyze_app" analyze
-    fi
 elif [[ $1 == -a ]]; then
     config_name=$2
     config_name_new=$3
@@ -191,7 +178,7 @@ elif [[ $1 == -a ]]; then
     if [ ! -z "$config_name_new" ]; then
         mv ./$config_name ./$config_name_new
     else
-        vim ./$config_name
+        $HOME/sh/tools/open_file_with_app $config_name "$($HOME/sh/tools/resolve_app "$video_config_app")"
     fi 
 elif [[ $1 == -l ]]; then
     ls configs
