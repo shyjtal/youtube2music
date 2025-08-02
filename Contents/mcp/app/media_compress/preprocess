@@ -18,7 +18,6 @@ else
     exit
 fi
 
-
 if [ -f "$dir_path" ]; then
     if [ -z "$out_path" ]; then
         out_path="$(dirname "$dir_path")"
@@ -34,8 +33,6 @@ else
     echo "$dir_path is not exist"
     exit
 fi
-
-out_path=$($HOME/sh/tools/resolve_alias "$out_path")
 
 for media_type in $(find "$dir_path" -type f ! -name '.*' | awk -F. '/\./ {print $NF}' | sort -u); do
     media_type=$(echo "$media_type" | tr '[:upper:]' '[:lower:]')
@@ -54,7 +51,7 @@ for media_type in $(find "$dir_path" -type f ! -name '.*' | awk -F. '/\./ {print
         file_media_type="${file##*.}"
         file_media_type=$(echo "$file_media_type" | tr '[:upper:]' '[:lower:]')
 
-        if [[ -f "$file" && $file_media_type == $media_type ]]; then  
+        if [[ -f "$file" && $file_media_type == $media_type ]]; then
             ./app -${compress_mode} ${compress_param} "$file" "$out_path"
         fi
 

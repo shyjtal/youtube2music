@@ -49,6 +49,10 @@ if [[ $1 == -d ]]; then
 
     yt-dlp -o "input.$download_type" "$url" -f "$load_type"
 
+    if [[ ! -e "input.$download_type" ]]; then
+        exit;
+    fi
+
     if [[ "$url" == https://www.bilibili.com/* ]]; then
         $HOME/sh/bvi "$url"
         cp $HOME/sh/$bvi_type/"bilibili info"/bv_info.txt video_info.txt
@@ -80,6 +84,15 @@ if [[ $1 == -d ]]; then
     else
         ffmpeg -i input.$download_type -vn -acodec aac -b:a 192k -filter:a "volume=$volume" output.$medium_type
     fi
+
+    if [ ! $? -eq 0 ]; then
+        rm ./output.$medium_type
+    fi
+
+    if [[ ! -e "./output.$medium_type" ]]; then
+        exit;
+    fi
+
     mv ./output.$medium_type "$output_path/$bv_title.$medium_type"
     cd ../
 
@@ -88,12 +101,21 @@ elif [[ $1 == -u ]]; then
     title="$3"
     auto_define_title_name="$3"
     
+    if [[ ! -e "$url" ]]; then
+        exit;
+    fi
     mv "$url" ./$temp/output.m4a
-
+    
     if [ -e "$artwork" ]; then
         ffmpeg -i ./$temp/output.m4a -map 0:a -c copy ./$temp/output_clean.m4a
         mv ./$temp/output_clean.m4a ./$temp/output.m4a
-        upload=./$temp/output_clean.m4a
+        if [ ! $? -eq 0 ]; then
+            rm ./$temp/output.m4a
+        fi
+    fi
+
+    if [[ ! -e "./$temp/output.m4a" ]]; then
+        exit;
     fi
     
     while IFS='=' read -r key value; do
@@ -113,7 +135,6 @@ elif [[ $1 == -u ]]; then
 
     ./mapper $bv_up
     
-    # 读取配置文件并设置变量
     while IFS='=' read -r key value; do
     if [[ -n "$key" && ! "$key" =~ ^# ]]; then
         export "$key"="$value"
@@ -156,10 +177,14 @@ elif [[ $1 == -u ]]; then
     AtomicParsley ./$temp/output.m4a --artist "$artist" --album "$album" --composer "$composer" --title "$auto_define_title_name" --year "$year" --genre "$genre" --artwork $artwork --overWrite
 
     if [[ $auto_compress == true ]]; then
+        mv ./$temp/output.m4a ./$temp/output_compressing.m4a
         if [[ -z $compress_param ]]; then
             compress_param=b128
         fi
-        $HOME/sh/mcp $compress_param $HOME/sh/app/youtube2music/$temp/output.m4a $HOME/sh/app/youtube2music/$temp/output.m4a 
+        $HOME/sh/mcp $compress_param $HOME/sh/app/youtube2music/$temp/output_compressing.m4a $HOME/sh/app/youtube2music/$temp/output.m4a
+        if [[ ! -e "./$temp/output.m4a" ]]; then
+            exit;
+        fi
     fi
 
     osascript -e "tell application \"Music\" to add POSIX file \"${HOME}/sh/app/youtube2music/$temp/output.m4a\""

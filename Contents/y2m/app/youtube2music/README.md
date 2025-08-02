@@ -101,3 +101,11 @@
     - add video_config_app in config
     - delete the option of -r
     - update two video configs for download audio and video
+
+# version 1.5
+- **date: 2025/08/02**
+- **env: macOS 15**
+- **feature**:
+    - fix a bug where a terminated task might continue uploading audio to Apple Music
+    - fix a bug where a terminated task might continue enforcing this task
+    
