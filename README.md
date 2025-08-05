@@ -108,4 +108,10 @@
 - **feature**:
     - fix a bug where a terminated task might continue uploading audio to Apple Music
     - fix a bug where a terminated task might continue enforcing this task
-    
+
+# version 1.5.1
+- **date: 2025/08/05**
+- **env: macOS 15**
+- **feature**:
+    - optimized the efficiency when use command contained -d
+   

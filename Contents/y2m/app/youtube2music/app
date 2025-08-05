@@ -80,9 +80,17 @@ if [[ $1 == -d ]]; then
     echo "$bv_title" > video_title.txt
     
     if [[ "$medium" == "video" ]]; then
-        ffmpeg -i input.$download_type -c:v copy -c:a aac -b:a 192k -filter:a "volume=$volume" output.$medium_type
+        if [[ -z "$volume" || "$volume" == "1.0" ]]; then
+            ffmpeg -i input.$download_type -c:v copy -c:a aac -b:a 192k output.$medium_type
+        else
+            ffmpeg -i input.$download_type -c:v copy -c:a aac -b:a 192k -filter:a "volume=$volume" output.$medium_type
+        fi   
     else
-        ffmpeg -i input.$download_type -vn -acodec aac -b:a 192k -filter:a "volume=$volume" output.$medium_type
+        if [[ -z "$volume" || "$volume" == "1.0" ]]; then     
+            ffmpeg -i input.$download_type -vn -c:a copy output.$medium_type
+        else  
+            ffmpeg -i input.$download_type -vn -acodec aac -b:a 192k -filter:a "volume=$volume" output.$medium_type
+        fi   
     fi
 
     if [ ! $? -eq 0 ]; then
@@ -212,10 +220,10 @@ elif [[ $1 == -* ]]; then
 else
     export output_path_=$HOME/sh/app/youtube2music/$temp
     ./app -d $1
-
+    
     video_name=$2
     video_name_network="$(cat $temp/video_title.txt)"
-    
+
     ./app -u "$HOME/sh/app/youtube2music/$temp/$video_name_network.$medium_type" $video_name
 fi
 
