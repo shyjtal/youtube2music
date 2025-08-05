@@ -87,9 +87,9 @@ if [[ $1 == -d ]]; then
         fi   
     else
         if [[ -z "$volume" || "$volume" == "1.0" ]]; then     
-            ffmpeg -i input.$download_type -vn -c:a copy output.$medium_type
-        else  
-            ffmpeg -i input.$download_type -vn -acodec aac -b:a 192k -filter:a "volume=$volume" output.$medium_type
+            ffmpeg -i input.$download_type -vn -c:a aac -b:a 192k output.m4a
+        else
+            ffmpeg -i input.$download_type -vn -c:a aac -b:a 192k -filter:a "volume=$volume" output.m4a  
         fi   
     fi
 
