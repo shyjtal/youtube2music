@@ -5,3 +5,4 @@ brew/yt-dlp
 tool/resolve_alias
 tool/resolve_app
 tool/open_file_with_app
+brew/python3

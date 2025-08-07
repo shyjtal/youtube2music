@@ -115,3 +115,10 @@
 - **feature**:
     - optimized the efficiency when use command contained -d
    
+
+# version 1.6
+- **date: 2025/08/07**
+- **env: macOS 15**
+- **feature**:
+    - add a new video title option named @custom to self-define video name by any apps
+    - add a group of configurations(exe_*) to custom what app to open @custom

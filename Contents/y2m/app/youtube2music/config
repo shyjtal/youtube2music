@@ -1,4 +1,4 @@
-version=1.5.1
+version=1.6
 git_repo=youtube2music
 
 readme_app=vscode
@@ -6,6 +6,8 @@ video_config_app=txt
 config_app=vim
 
 defalut=hcf
-video_name_allowed=date,title
+video_name_allowed=date,title,custom
 auto_compress=true
 compress_param=b128
+
+exe_py=python3

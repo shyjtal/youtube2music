@@ -158,7 +158,7 @@ elif [[ $1 == -u ]]; then
     for i in "${!name_parts[@]}"; do
         found_in_allowed=false
         name_part=${name_parts[$i]}
-        echo $name_part
+      
         for item in "${video_name_allowed[@]}"; do
             if [[ "$name_part" == $item* ]]; then
                 found_in_allowed=true
@@ -170,6 +170,10 @@ elif [[ $1 == -u ]]; then
                 item_=${bv_release:0:10}
             elif [[ $item == "title" ]]; then
                 item_=$title
+            elif [[ $item == "custom" ]]; then
+                item_=$($temp/custom_command.sh $title)
+                echo $item_
+                exit;
             fi
             new_title=$new_title$item_${name_part#"$item"}
         else
@@ -177,6 +181,8 @@ elif [[ $1 == -u ]]; then
             exit;
         fi 
     done
+
+    exit;
 
     if [[ -z $auto_define_title_name ]]; then
         auto_define_title_name=$new_title
@@ -203,15 +209,24 @@ elif [[ $1 == -h ]]; then
     cat help
 elif [[ $1 == -a ]]; then
     config_name=$2
-    config_name_new=$3
+    if [[ $3 != -custom ]]; then
+        config_name_new=$3
+    fi
     cd ./video_configs
     if [ ! -e "$config_name" ]; then
         cp ./.$template ./$config_name
     fi
+
     if [ ! -z "$config_name_new" ]; then
         mv ./$config_name ./$config_name_new
     else
-        $HOME/sh/tools/open_file_with_app $config_name "$($HOME/sh/tools/resolve_app "$video_config_app")"
+        if [[ $3 == -custom ]]; then
+            base=$(basename "$4")
+            ext=".${base#*.}"
+            cp "$4" ./.custom/$config_name$ext
+        else
+            $HOME/sh/tools/open_file_with_app $config_name "$($HOME/sh/tools/resolve_app "$video_config_app")"
+        fi
     fi 
 elif [[ $1 == -l ]]; then
     ls video_configs

@@ -2,6 +2,12 @@
 up_name_input=$1
 found=false
 
+while IFS='=' read -r key value; do
+if [[ -n "$key" && ! "$key" =~ ^# ]]; then
+    export "$key"="$value"
+fi
+done < config
+
 for file in "./video_configs"/*; do  
   unset matching
   filename=$(basename "$file")
@@ -16,7 +22,13 @@ for file in "./video_configs"/*; do
   if [[ $found == false ]]; then
     for item in "${matching[@]}"; do
       if [[ "$up_name_input" == $item ]]; then
-        cp ./video_configs/$filename ./$temp/video_info
+        cp ./video_configs/$filename ./$temp/video_config
+        filename=$(basename ./video_configs/.custom/$filename*)
+        ext="${filename##*.}"
+        cp ./video_configs/.custom/$filename* ./$temp/custom.$ext
+        exe_app=$(eval "echo \$exe_$ext")
+        echo "$exe_app ./video_configs/.custom/$filename" > ./$temp/custom_command.sh
+        chmod +x ./$temp/custom_command.sh
         exit;
       fi
     done
