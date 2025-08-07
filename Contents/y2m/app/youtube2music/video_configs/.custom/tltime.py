@@ -1,49 +1,23 @@
-import requests
-import webbrowser
-import argparse
-import urllib
-import subprocess
+import sys
+import re
 
 
-def open_video(idx):
-    try:
-        o_url = "https://www.zhaoseba24.com"
-        response = requests.get(o_url)
-        head_url = str(response.url)
-        tile_url = '.html'
+original_title = sys.argv[1]
 
-        if idx is not None:
-            if type(idx) == int:
-                body_url = '/web/videodetails-'
-                idx_url = str(idx)
-            else:
-                body_url = '/web/seach-'
-                idx_url = idx+'-0-0'
-        else:
-            body_url = '/web/video-duanpian-'
-            idx_url = str(131)
+# 提取集数和日期
+match = re.search(r'第(\d+)集\s*(\d{8})', original_title)
+if not match:
+    print(original_title)
+    sys.exit(1)
 
-        d_url = head_url+body_url+idx_url+tile_url
-        d_url = urllib.parse.quote(d_url, safe=":/?&=")
-        subprocess.run(["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", d_url])
-        # webbrowser.get("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome").open(d_url)
-    except requests.exceptions.RequestException as e:
-        print(f"发生错误: {e}")
+episode = match.group(1)
+date_str = match.group(2)
+date_fmt = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}"
 
+# 去掉括号及其内容、去掉尾部标签
+clean_title = re.sub(r'（.*?）', '', original_title)
+clean_title = re.sub(r'#.*', '', clean_title).strip()
 
-if __name__ == '__main__':
-    def int_or_str(value):
-        try:
-            return int(value)
-        except ValueError:
-            return value
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--idx", type=int_or_str, default=None)
-    opt = parser.parse_args()
-    open_video(opt.idx)
-    # https://7361.k2qx.com//web/videodetails-21009.html
-    # https://7361.k2qx.com/web/index.html
-    # https://7361.k2qx.com//web/video-duanpian-131.html
-    # https://7361.k2qx.com/web/seach-牛仔裤-0-0.html
-    
+# 构造新标题
+new_title = f"{episode}集-{date_fmt} {clean_title}"
+print(new_title)
