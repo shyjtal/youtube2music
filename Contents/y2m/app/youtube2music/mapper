@@ -27,7 +27,8 @@ for file in "./video_configs"/*; do
         ext="${filename##*.}"
         cp ./video_configs/.custom/$filename* ./$temp/custom.$ext
         exe_app=$(eval "echo \$exe_$ext")
-        echo "$exe_app ./video_configs/.custom/$filename" > ./$temp/custom_command.sh
+        video_name_network="$(cat $temp/video_title.txt)"
+        echo "$exe_app ./video_configs/.custom/$filename \"$video_name_network\"" > ./$temp/custom_command.sh
         chmod +x ./$temp/custom_command.sh
         exit;
       fi

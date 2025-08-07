@@ -7,5 +7,5 @@ output_path=/Users/shijitao/Desktop
 year=2025
 genre=政治
 medium=audio
-name=@date @title
+name=@custom
 matching=*章天亮,天亮時分

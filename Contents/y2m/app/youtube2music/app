@@ -171,7 +171,7 @@ elif [[ $1 == -u ]]; then
             elif [[ $item == "title" ]]; then
                 item_=$title
             elif [[ $item == "custom" ]]; then
-                item_=$($temp/custom_command.sh $title)
+                item_=$($temp/custom_command.sh "$title")
             fi
             new_title=$new_title$item_${name_part#"$item"}
         else
