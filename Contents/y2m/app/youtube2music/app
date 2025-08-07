@@ -172,8 +172,6 @@ elif [[ $1 == -u ]]; then
                 item_=$title
             elif [[ $item == "custom" ]]; then
                 item_=$($temp/custom_command.sh $title)
-                echo $item_
-                exit;
             fi
             new_title=$new_title$item_${name_part#"$item"}
         else
@@ -181,8 +179,6 @@ elif [[ $1 == -u ]]; then
             exit;
         fi 
     done
-
-    exit;
 
     if [[ -z $auto_define_title_name ]]; then
         auto_define_title_name=$new_title
