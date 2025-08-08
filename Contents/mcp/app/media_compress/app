@@ -22,16 +22,16 @@ fi
 
 if [[ $media_type == '.mp4' || $media_type == '.mov' ]]; then
     if [[ $compress_mode == '-c' ]]; then
-        ffmpeg -i "$o_path" -vcodec libx264 -crf "$compress_para" -preset fast -acodec aac -b:a 128k "./temp/$file_name"
+        ffmpeg -i "$o_path" -vcodec libx264 -crf "$compress_para" -preset fast -acodec aac -b:a 128k "./$temp/$file_name"
     elif [[ $compress_mode == '-b' ]]; then
-        ffmpeg -i "$o_path" -c:v h264_videotoolbox -b:v "${compress_para}M" -c:a aac -b:a 128k "./temp/$file_name"
+        ffmpeg -i "$o_path" -c:v h264_videotoolbox -b:v "${compress_para}M" -c:a aac -b:a 128k "./$temp/$file_name"
     else
         echo "Unsupported compress mode: $compress_mode"
         exit
     fi
 elif  [[ $media_type == '.m4a' || $media_type == '.mp3' ]]; then
     if [[ $compress_mode == '-b' ]]; then
-        ffmpeg -i "$o_path" -vn -c:a aac -b:a ${compress_para}k -f ipod "./temp/$file_name"
+        ffmpeg -i "$o_path" -vn -c:a aac -b:a ${compress_para}k -f ipod "./$temp/$file_name"
     else
         echo "Unsupported compress mode: $compress_mode"
         exit
@@ -49,24 +49,24 @@ elif  [[ $media_type == '.gif' ]]; then
         if [[ $protect_dim_gif -lt $wide && $protect_dim_gif -lt $len ]]; then
             wide=$(echo "$wide * $compress_para" | bc -l | xargs printf "%.0f")
             len=$(echo "$len * $compress_para" | bc -l | xargs printf "%.0f")
-            gifsicle -O3 --colors 256 --resize ${wide}x${len} "$o_path" -o "./temp/$file_name"
+            gifsicle -O3 --colors 256 --resize ${wide}x${len} "$o_path" -o "./$temp/$file_name"
         else
             if [[ $forbid_dim_gif -lt $wide && $forbid_dim_gif -lt $len ]]; then
                 if [[ $protect_dim_gif -lt $wide || $protect_dim_gif -lt $len ]]; then
                     wide=$(echo "$wide * $compress_para" | bc -l | xargs printf "%.0f")
                     len=$(echo "$len * $compress_para" | bc -l | xargs printf "%.0f")
-                    gifsicle -O3 --colors 256 --resize ${wide}x${len} "$o_path" -o "./temp/$file_name"
+                    gifsicle -O3 --colors 256 --resize ${wide}x${len} "$o_path" -o "./$temp/$file_name"
                 else
                     file_name_without_ext="${file_name%.*}"
                     file_name=${file_name_without_ext}${compress_mode}${compress_para}_failed_{protect_dim_gif}${media_type}
                     d_path="$(dirname "$d_path")/${file_name}"
-                    cp "$o_path" "./temp/$file_name"
+                    cp "$o_path" "./$temp/$file_name"
                 fi 
             else
                 file_name_without_ext="${file_name%.*}"
                 file_name=${file_name_without_ext}${compress_mode}${compress_para}_failed_{forbid_dim_gif}${media_type}
                 d_path="$(dirname "$d_path")/${file_name}"
-                cp "$o_path" "./temp/$file_name"
+                cp "$o_path" "./$temp/$file_name"
             fi
         fi
     elif [[ $compress_mode == '-f' ]]; then
@@ -87,7 +87,7 @@ elif  [[ $media_type == '.gif' ]]; then
             expr+="eq(mod(n\\,$mod_base)\,$pick)"
         done
 
-        ffmpeg -i "$o_path" -vf "select='${expr}',setpts=N/FRAME_RATE/TB" -vsync 0 "./temp/$file_name"
+        ffmpeg -i "$o_path" -vf "select='${expr}',setpts=N/FRAME_RATE/TB" -vsync 0 "./$temp/$file_name"
     else
         echo "Unsupported compress mode: $compress_mode"
         exit
@@ -97,11 +97,11 @@ elif  [[ $media_type == '.heic' ]]; then
         file_name="${file_name%.*}".jpg
         d_path="${d_path%.*}".jpg
         ffmpeg -i "$o_path" -frames:v 1 -qscale:v $compress_para 
-        convert "$o_path" -quality $compress_para "./temp/$file_name"
+        convert "$o_path" -quality $compress_para "./$temp/$file_name"
     elif [[ $compress_mode == '-j' ]]; then
         file_name="${file_name%.*}".jpg
         d_path="${d_path%.*}".jpg
-        sips -s format jpeg -s formatOptions $compress_para "$o_path" --out "./temp/$file_name"
+        sips -s format jpeg -s formatOptions $compress_para "$o_path" --out "./$temp/$file_name"
     else
         echo "Unsupported compress mode: $compress_mode"
         exit
@@ -110,7 +110,7 @@ elif  [[ $media_type == '.png' || $media_type == '.jpg' || $media_type == '.jpeg
     if [[ $compress_mode == '-j' ]]; then
         file_name="${file_name%.*}".jpg
         d_path="${d_path%.*}".jpg
-        sips -s format jpeg -s formatOptions $compress_para "$o_path" --out "./temp/$file_name"
+        sips -s format jpeg -s formatOptions $compress_para "$o_path" --out "./$temp/$file_name"
     else
         echo "Unsupported compress mode: $compress_mode"
         exit
@@ -120,6 +120,6 @@ else
     exit
 fi
 
-exiftool -TagsFromFile "$o_path" -all:all -overwrite_original "./temp/$file_name"
+exiftool -TagsFromFile "$o_path" -all:all -overwrite_original "./$temp/$file_name"
 
-mv "./temp/$file_name" "$d_path"
+mv "./$temp/$file_name" "$d_path"

@@ -1,5 +1,14 @@
 cd ~/sh/app/media_compress
-mkdir -p ./temp
+
+temp_local="temp"
+
+while [[ -d "$temp_local" ]]; do
+  temp_local="temp"${i}
+  ((i++))
+done
+
+export temp=$temp_local
+mkdir $temp_local
 
 while IFS='=' read -r key value; do
   if [[ -n "$key" && ! "$key" =~ ^# ]]; then
@@ -22,9 +31,9 @@ if [ -f "$dir_path" ]; then
     if [ -z "$out_path" ]; then
         out_path="$(dirname "$dir_path")"
     fi
-    mkdir ./temp/media
-    cp "$dir_path" ./temp/media/
-    dir_path="$HOME/sh/app/media_compress/temp/media"
+    mkdir ./$temp_local/media
+    cp "$dir_path" ./$temp_local/media/
+    dir_path="$HOME/sh/app/media_compress/$temp_local/media"
 elif [ -d "$dir_path" ]; then
     if [ -z "$out_path" ]; then
         out_path="$dir_path"
@@ -58,4 +67,4 @@ for media_type in $(find "$dir_path" -type f ! -name '.*' | awk -F. '/\./ {print
     done    
 done
 
-rm -r ./temp
+rm -r $temp_local
