@@ -11,3 +11,4 @@ auto_compress=true
 compress_param=b128
 
 exe_py=python3
+exe_sh=sh

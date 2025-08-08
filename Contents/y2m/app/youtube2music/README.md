@@ -127,5 +127,5 @@
 - **date: 2025/08/08**
 - **env: macOS 15**
 - **feature**:
-    - fix a bug that cannot run multitask when use auto compressing
+    - fix a bug that can't run multitask when use auto compressing
 
