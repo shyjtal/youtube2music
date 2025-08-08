@@ -122,3 +122,9 @@
 - **feature**:
     - add a new video title option named @custom to self-define video name by any apps
     - add a group of configurations(exe_*) to custom what app to open @custom
+
+# version 1.6.1
+- **date: 2025/08/08**
+- **env: macOS 15**
+- **feature**:
+    - fix a bug that cannot run multitask when use auto compressing
