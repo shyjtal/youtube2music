@@ -128,3 +128,4 @@
 - **env: macOS 15**
 - **feature**:
     - fix a bug that cannot run multitask when use auto compressing
+
