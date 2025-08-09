@@ -8,27 +8,28 @@ if [[ -n "$key" && ! "$key" =~ ^# ]]; then
 fi
 done < config
 
-for file in "./video_configs"/*; do  
+for file in "./resources/video_configs"/*; do  
   unset matching
   filename=$(basename "$file")
   while IFS='=' read -r key value || [[ -n "$key" ]]; do
     if [[ -n "$key" && ! "$key" =~ ^# ]]; then
         export "$key=$value"
     fi
-  done < "./video_configs/$filename"
+  done < "./resources/video_configs/$filename"
 
   IFS=',' read -ra matching <<< "$matching"
 
   if [[ $found == false ]]; then
     for item in "${matching[@]}"; do
       if [[ "$up_name_input" == $item ]]; then
-        cp ./video_configs/$filename ./$temp/video_config
-        filename=$(basename ./video_configs/.custom/$filename*)
+        cp ./resources/video_configs/$filename ./$temp/video_config
+        
+        filename=$(basename ./resources/custom/$filename*)
         ext="${filename##*.}"
-        cp ./video_configs/.custom/$filename* ./$temp/custom.$ext
+        cp ./resources/custom/$filename* ./$temp/custom.$ext
         exe_app=$(eval "echo \$exe_$ext")
         video_name_network="$(cat $temp/video_title.txt)"
-        echo "$exe_app ./video_configs/.custom/$filename \"$video_name_network\"" > ./$temp/custom_command.sh
+        echo "$exe_app ./resources/custom/$filename \"$video_name_network\"" > ./$temp/custom_command.sh
         chmod +x ./$temp/custom_command.sh
         exit;
       fi

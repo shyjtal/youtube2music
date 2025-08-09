@@ -1,4 +1,4 @@
-version=1.6.1
+version=1.6.2
 git_repo=youtube2music
 
 readme_app=vscode
@@ -11,4 +11,3 @@ auto_compress=true
 compress_param=b128
 
 exe_py=python3
-exe_sh=sh

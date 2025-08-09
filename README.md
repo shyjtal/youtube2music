@@ -127,5 +127,13 @@
 - **date: 2025/08/08**
 - **env: macOS 15**
 - **feature**:
-    - fix a bug that can't run multitask when use auto compressing
+    - fix a bug that cannot run multitask when use auto compressing
+
+# version 1.6.2
+- **date: 2025/08/09**
+- **env: macOS 15**
+- **feature**:
+    - update the files architecture of this app
+    - add a dir named resources to store resources
+    - add a dir named bin to store executable files
 

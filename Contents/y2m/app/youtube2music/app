@@ -43,7 +43,6 @@ if [[ $1 == -d ]]; then
     title=$3
     cd $temp
 
-    # video_web_info
     touch video_title.txt
     touch video_info.txt
 
@@ -141,7 +140,7 @@ elif [[ $1 == -u ]]; then
         fi
     fi
 
-    ./mapper $bv_up
+    ./bin/mapper $bv_up
     
     while IFS='=' read -r key value; do
     if [[ -n "$key" && ! "$key" =~ ^# ]]; then
@@ -208,24 +207,24 @@ elif [[ $1 == -a ]]; then
     if [[ $3 != -custom ]]; then
         config_name_new=$3
     fi
-    cd ./video_configs
-    if [ ! -e "$config_name" ]; then
-        cp ./.$template ./$config_name
+    
+    if [ ! -e "./resources/video_configs/$config_name" ]; then
+        cp ./resources/static/video_config_template ./resources/video_configs/$config_name
     fi
-
+    
     if [ ! -z "$config_name_new" ]; then
-        mv ./$config_name ./$config_name_new
+        mv ./resources/video_configs/$config_name ./resources/video_configs/$config_name_new
     else
         if [[ $3 == -custom ]]; then
             base=$(basename "$4")
             ext=".${base#*.}"
-            cp "$4" ./.custom/$config_name$ext
+            cp "$4" ./resources/custom/$config_name$ext
         else
-            $HOME/sh/tools/open_file_with_app $config_name "$($HOME/sh/tools/resolve_app "$video_config_app")"
+            $HOME/sh/tools/open_file_with_app ./resources/video_configs/$config_name "$($HOME/sh/tools/resolve_app "$video_config_app")"
         fi
     fi 
 elif [[ $1 == -l ]]; then
-    ls video_configs
+    ls resources/video_configs
 elif [[ $1 == -* ]]; then
     echo "option false"
 else
