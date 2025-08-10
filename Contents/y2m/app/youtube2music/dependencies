@@ -2,7 +2,5 @@ dev/bvi
 mcp
 brew/ffmpeg
 brew/yt-dlp
-tool/resolve_alias
-tool/resolve_app
-tool/open_file_with_app
+tool/open_file
 brew/python3

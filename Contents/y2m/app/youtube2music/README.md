@@ -137,3 +137,8 @@
     - add a dir named resources to store resources
     - add a dir named bin to store executable files
 
+# version 1.6.3
+- **date: 2025/08/10**
+- **env: macOS 15**
+- **feature**:
+    - update the dependency tools for more smaller app storage space usage

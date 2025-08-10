@@ -199,7 +199,7 @@ elif [[ $1 == -u ]]; then
     osascript -e "tell application \"Music\" to add POSIX file \"${HOME}/sh/app/youtube2music/$temp/output.m4a\""
     
 elif [[ $1 == -c ]]; then
-    $HOME/sh/tools/open_file_with_app config "$($HOME/sh/tools/resolve_app "$config_app")"
+    $$HOME/sh/tools/open_file config $config_app
 elif [[ $1 == -h ]]; then
     cat help
 elif [[ $1 == -a ]]; then
@@ -220,7 +220,7 @@ elif [[ $1 == -a ]]; then
             ext=".${base#*.}"
             cp "$4" ./resources/custom/$config_name$ext
         else
-            $HOME/sh/tools/open_file_with_app ./resources/video_configs/$config_name "$($HOME/sh/tools/resolve_app "$video_config_app")"
+            $HOME/sh/tools/open_file "./resources/video_configs/$config_name" "$video_config_app"
         fi
     fi 
 elif [[ $1 == -l ]]; then
