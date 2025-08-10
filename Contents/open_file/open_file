@@ -1,0 +1,31 @@
+#!/bin/bash
+
+open_file() {
+
+    open_file="$1"
+    open_app="$2"
+
+    if [[ -z "$open_app" ]]; then
+        open_app=vim
+    fi
+
+    if ! open -Ra "$open_app" 2>/dev/null; then
+        resolve_app="$open_app"
+        if [[ $resolve_app == "vscode" ]]; then
+            resolve_app="Visual Studio Code"
+        elif [[ $resolve_app == "txt" ]]; then
+            resolve_app="TextEdit"
+        elif [[ $resolve_app == "terminal" ]]; then
+            resolve_app="vim"
+        fi
+        open_app="$resolve_app"
+    fi
+
+    if [[ -z $open_app || $open_app == "vim" || $open_app == "terminal" ]]; then
+        vim "$open_file"
+    else
+        open -a "$open_app" "$open_file"
+    fi
+}
+
+open_file "$1" "$2"
