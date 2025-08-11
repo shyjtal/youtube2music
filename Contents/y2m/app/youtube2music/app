@@ -21,13 +21,12 @@ if [ -n "$output_path_" ]; then
 fi
 
 if [[ "$medium" == "video" ]]; then
-    medium_type=mp4
-    load_type=ba+bv
-    download_type=mp4
+    load_type="137+140"
+    medium_type=.mp4
 else
-    medium_type=m4a
-    load_type=ba
-    download_type=webm
+    load_type="140"
+    download_type=.m4a
+    medium_type=.m4a
 fi
 
 if [[ -d "$HOME/sh/app/bilibili info" ]]; then
@@ -46,12 +45,18 @@ if [[ $1 == -d ]]; then
     touch video_title.txt
     touch video_info.txt
 
-    yt-dlp -o "input.$download_type" "$url" -f "$load_type"
+    yt-dlp -o "input$download_type" "$url" -f "$load_type"
 
-    if [[ ! -e "input.$download_type" ]]; then
-        exit;
+    if [[ "$medium" == "video" ]]; then
+        checked_file=input$medium_type
+    else
+        checked_file=input$download_type
     fi
 
+    if [[ ! -e "$checked_file" ]]; then
+        exit;
+    fi
+   
     if [[ "$url" == https://www.bilibili.com/* ]]; then
         $HOME/sh/bvi "$url"
         cp $HOME/sh/$bvi_type/"bilibili info"/bv_info.txt video_info.txt
@@ -79,28 +84,28 @@ if [[ $1 == -d ]]; then
     echo "$bv_title" > video_title.txt
     
     if [[ "$medium" == "video" ]]; then
-        if [[ -z "$volume" || "$volume" == "1.0" ]]; then
-            ffmpeg -i input.$download_type -c:v copy -c:a aac -b:a 192k output.$medium_type
+        if [[ -z "$volume" || "$volume" == "1.0" ]]; then     
+            mv input$medium_type output$medium_type
         else
-            ffmpeg -i input.$download_type -c:v copy -c:a aac -b:a 192k -filter:a "volume=$volume" output.$medium_type
-        fi   
+            ffmpeg -i input$medium_type -af "volume=1.5" -c:v copy output$medium_type
+        fi           
     else
         if [[ -z "$volume" || "$volume" == "1.0" ]]; then     
-            ffmpeg -i input.$download_type -vn -c:a aac -b:a 192k output.m4a
+            mv input$download_type output$medium_type
         else
-            ffmpeg -i input.$download_type -vn -c:a aac -b:a 192k -filter:a "volume=$volume" output.m4a  
+            ffmpeg -i input$download_type -vn -c:a aac -b:a 192k -filter:a "volume=$volume" output$medium_type
         fi   
     fi
 
     if [ ! $? -eq 0 ]; then
-        rm ./output.$medium_type
+        rm ./output$medium_type
     fi
 
-    if [[ ! -e "./output.$medium_type" ]]; then
+    if [[ ! -e "./output$medium_type" ]]; then
         exit;
     fi
 
-    mv ./output.$medium_type "$output_path/$bv_title.$medium_type"
+    mv ./output$medium_type "$output_path/$bv_title$medium_type"
     cd ../
 
 elif [[ $1 == -u ]]; then
@@ -234,7 +239,7 @@ else
     video_name=$2
     video_name_network="$(cat $temp/video_title.txt)"
 
-    ./app -u "$HOME/sh/app/youtube2music/$temp/$video_name_network.$medium_type" $video_name
+    ./app -u "$HOME/sh/app/youtube2music/$temp/$video_name_network$medium_type" $video_name
 fi
 
 set +f

@@ -4,15 +4,6 @@ resolve_alias() {
     local input_path="$1"
     resolved="$input_path"
 
-    if [[ ! -e "$input_path" ]]; then
-        echo "$input_path 不存在" >&2
-        exit 1
-    fi
-
-    if [[ -d "$input_path" ]]; then
-        return
-    fi
-
     # 检查是否为 Finder Alias
     if xattr -p com.apple.FinderInfo "$input_path" &>/dev/null; then
         # 使用 osascript 解析 Finder Alias
@@ -34,8 +25,44 @@ resolve_alias() {
             resolved="${resolved%/}"
         fi
     fi
-
 }
 
-resolve_alias "$1"
+
+if [[ ! -e "$1" ]]; then
+    echo "$1 不存在" >&2
+    exit 1
+fi
+
+if [[ -d "$1" ]]; then
+    resolved="$1"
+else
+    mkdir -p $HOME/sh/tools/Library/resolve_alias
+    cd $HOME/sh/tools
+
+    temp_local="temp"
+    while [[ -d "$temp_local" ]]; do
+    temp_local="temp"${i}
+    ((i++))
+    done
+    mkdir Library/resolve_alias/$temp_local
+
+    filename=$(basename "$1")
+    if [[ "$filename" == *.* && "$filename" != .* ]]; then
+       ext=".${filename##*.}"
+    fi
+
+    cp "$1" ./Library/resolve_alias/$temp_local/  
+    mv "Library/resolve_alias/$temp_local/$filename" "Library/resolve_alias/$temp_local/file$ext"
+
+    resolve_alias "Library/resolve_alias/$temp_local/file$ext"
+
+    if [[ "$resolved" == "Library/resolve_alias/$temp_local/file$ext" ]]; then
+        resolved="$1"
+    elif [[ -z $resolved ]]; then
+        resolved="$1"
+    fi
+
+    rm -r Library/resolve_alias/$temp_local
+fi
+
 echo "$resolved"

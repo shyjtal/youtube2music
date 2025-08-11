@@ -142,3 +142,11 @@
 - **env: macOS 15**
 - **feature**:
     - update the dependency tools for more smaller app storage space usage
+
+# version 1.7
+- **date: 2025/08/11**
+- **env: macOS 15**
+- **feature**:
+    - deliver a feature allow downloads video from youtube
+    - optimized the audio and video download process
+    - accelerating the speed uses or has option -d without turning volume for audio and video
