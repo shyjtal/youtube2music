@@ -45,21 +45,15 @@ if [[ $1 == -d ]]; then
     touch video_title.txt
     touch video_info.txt
 
-    yt-dlp -o "input$download_type" "$url" -f "$load_type"
-
-    if [[ "$medium" == "video" ]]; then
-        checked_file=input$medium_type
-    else
-        checked_file=input$download_type
-    fi
-
-    if [[ ! -e "$checked_file" ]]; then
-        exit;
-    fi
-   
     if [[ "$url" == https://www.bilibili.com/* ]]; then
         $HOME/sh/bvi "$url"
         cp $HOME/sh/$bvi_type/"bilibili info"/bv_info.txt video_info.txt
+        if [[ "$medium" == "video" ]]; then
+            load_type="30064+30232"
+        else
+            load_type="30232"
+        fi
+        
     elif [[ "$url" == https://www.youtube.com/* ]]; then
         yt-dlp -j "$url" | jq -r '
         "bv_title=" + .title,
@@ -74,14 +68,26 @@ if [[ $1 == -d ]]; then
         )
         ' > video_info.txt
     fi
+
+    echo "$bv_title" > video_title.txt
+
+    yt-dlp -o "input$download_type" "$url" -f "$load_type"
+
+    if [[ "$medium" == "video" ]]; then
+        checked_file=input$medium_type
+    else
+        checked_file=input$download_type
+    fi
+
+    if [[ ! -e "$checked_file" ]]; then
+        exit;
+    fi
     
     while IFS='=' read -r key value; do
     if [[ -n "$key" && ! "$key" =~ ^# ]]; then
         export "$key"="$value"
     fi
     done < video_info.txt
-
-    echo "$bv_title" > video_title.txt
     
     if [[ "$medium" == "video" ]]; then
         if [[ -z "$volume" || "$volume" == "1.0" ]]; then     
