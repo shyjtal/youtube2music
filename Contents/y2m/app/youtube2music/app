@@ -1,12 +1,4 @@
 #!/bin/sh
-set -f  # 禁用路径扩展
-
-# 读取配置文件并设置变量
-while IFS='=' read -r key value; do
-if [[ -n "$key" && ! "$key" =~ ^# ]]; then
-    export "$key"="$value"
-fi
-done < config
 
 while IFS='=' read -r key value; do
 if [[ -n "$key" && ! "$key" =~ ^# ]]; then
@@ -14,11 +6,11 @@ if [[ -n "$key" && ! "$key" =~ ^# ]]; then
 fi
 done < ./$temp/video_config
 
-IFS=',' read -ra video_name_allowed <<< "$video_name_allowed"
-
 if [ -n "$output_path_" ]; then
     output_path=$output_path_
 fi
+
+video_name_network=output
 
 if [[ "$medium" == "video" ]]; then
     load_type="137+140"
@@ -35,8 +27,6 @@ else
     bvi_type=dev
 fi
 
-video_name_network=output
-
 if [[ $1 == -d ]]; then
     url=$2
     title=$3
@@ -52,8 +42,7 @@ if [[ $1 == -d ]]; then
             load_type="30064+30232"
         else
             load_type="30232"
-        fi
-        
+        fi   
     elif [[ "$url" == https://www.youtube.com/* ]]; then
         yt-dlp -j "$url" | jq -r '
         "bv_title=" + .title,
@@ -69,47 +58,37 @@ if [[ $1 == -d ]]; then
         ' > video_info.txt
     fi
 
-    echo "$bv_title" > video_title.txt
-
-    yt-dlp -o "input$download_type" "$url" -f "$load_type"
-
-    if [[ "$medium" == "video" ]]; then
-        checked_file=input$medium_type
-    else
-        checked_file=input$download_type
-    fi
-
-    if [[ ! -e "$checked_file" ]]; then
-        exit;
-    fi
-    
     while IFS='=' read -r key value; do
     if [[ -n "$key" && ! "$key" =~ ^# ]]; then
         export "$key"="$value"
     fi
     done < video_info.txt
-    
+
+    echo "$bv_title" > video_title.txt
+
+    yt-dlp -o "input$download_type" "$url" -f "$load_type"
+
     if [[ "$medium" == "video" ]]; then
-        if [[ -z "$volume" || "$volume" == "1.0" ]]; then     
-            mv input$medium_type output$medium_type
-        else
-            ffmpeg -i input$medium_type -af "volume=1.5" -c:v copy output$medium_type
-        fi           
+        download_type=$medium_type
+    fi
+
+    [[ ! -e "input$download_type" ]] && exit
+    
+    if [[ -z "$volume" || "$volume" == "1.0" ]]; then     
+        mv input$download_type output$medium_type
     else
-        if [[ -z "$volume" || "$volume" == "1.0" ]]; then     
-            mv input$download_type output$medium_type
+        if [[ "$medium" == "video" ]]; then
+            ffmpeg -i input$download_type -af "volume=$volume" -c:v copy output$medium_type   
         else
-            ffmpeg -i input$download_type -vn -c:a aac -b:a 192k -filter:a "volume=$volume" output$medium_type
-        fi   
+            ffmpeg -i input$download_type -vn -c:a aac -b:a 192k -filter:a "volume=$volume" output$medium_type 
+        fi
+
+        if [ ! $? -eq 0 ]; then
+            rm ./output$medium_type
+        fi
     fi
 
-    if [ ! $? -eq 0 ]; then
-        rm ./output$medium_type
-    fi
-
-    if [[ ! -e "./output$medium_type" ]]; then
-        exit;
-    fi
+    [[ ! -e "./output$medium_type" ]] && exit
 
     mv ./output$medium_type "$output_path/$bv_title$medium_type"
     cd ../
@@ -118,29 +97,31 @@ elif [[ $1 == -u ]]; then
     url="$2"
     title="$3"
     auto_define_title_name="$3"
-    
-    if [[ ! -e "$url" ]]; then
-        exit;
-    fi
-    mv "$url" ./$temp/output.m4a
-    
-    if [ -e "$artwork" ]; then
-        ffmpeg -i ./$temp/output.m4a -map 0:a -c copy ./$temp/output_clean.m4a
-        mv ./$temp/output_clean.m4a ./$temp/output.m4a
-        if [ ! $? -eq 0 ]; then
-            rm ./$temp/output.m4a
-        fi
-    fi
 
-    if [[ ! -e "./$temp/output.m4a" ]]; then
-        exit;
-    fi
-    
+    [[ ! -e "$url" ]] && exit
+    mv "$url" ./$temp/output.m4a
+
     while IFS='=' read -r key value; do
     if [[ -n "$key" && ! "$key" =~ ^# ]]; then
         export "$key"="$value"
     fi
     done < ./$temp/video_info.txt
+
+    ./bin/mapper $bv_up
+
+        while IFS='=' read -r key value; do
+    if [[ -n "$key" && ! "$key" =~ ^# ]]; then
+        export "$key"="$value"
+    fi
+    done < ./$temp/video_config
+    
+    if [ -e "$artwork" ]; then
+        ffmpeg -i ./$temp/output.m4a -map 0:a -c copy ./$temp/output_clean.m4a
+        mv ./$temp/output_clean.m4a ./$temp/output.m4a
+        [[ ! $? -eq 0 ]] && rm ./$temp/output.m4a
+    fi
+
+    [[ ! -e "./$temp/output.m4a" ]] && exit
     
     if [ -z "$title" ]; then
         if [[ ! -z "$bv_title" ]]; then
@@ -150,47 +131,40 @@ elif [[ $1 == -u ]]; then
             title="${filename%.*}"
         fi
     fi
-
-    ./bin/mapper $bv_up
     
-    while IFS='=' read -r key value; do
-    if [[ -n "$key" && ! "$key" =~ ^# ]]; then
-        export "$key"="$value"
-    fi
-    done < ./$temp/video_config
-
     if [[ -z $name ]]; then
         name="@title"
     fi
     
+    IFS=',' read -ra video_name_allowed <<< "$video_name_allowed"
     IFS='@' read -ra name_parts <<< "${name:1}"
 
-    for i in "${!name_parts[@]}"; do
-        found_in_allowed=false
-        name_part=${name_parts[$i]}
-      
-        for item in "${video_name_allowed[@]}"; do
-            if [[ "$name_part" == $item* ]]; then
-                found_in_allowed=true
-                break
+    if [[ -z $auto_define_title_name ]]; then
+        for i in "${!name_parts[@]}"; do
+            found_in_allowed=false
+            name_part=${name_parts[$i]}
+
+            for item in "${video_name_allowed[@]}"; do
+                if [[ "$name_part" == $item* ]]; then
+                    found_in_allowed=true
+                    break
+                fi
+            done
+
+            if [[ $found_in_allowed == "true" ]]; then
+                if [[ $item == "date" ]]; then
+                    item_=${bv_release:0:10}
+                elif [[ $item == "title" ]]; then
+                    item_=$title
+                elif [[ $item == "custom" ]]; then
+                    item_=$($temp/custom_command.sh "$title")
+                fi
+                new_title=$new_title$item_${name_part#"$item"}
+            else
+                echo "name part $name_part donot exist in video_name_allowed"
+                exit;
             fi
         done
-        if [[ $found_in_allowed == "true" ]]; then
-            if [[ $item == "date" ]]; then
-                item_=${bv_release:0:10}
-            elif [[ $item == "title" ]]; then
-                item_=$title
-            elif [[ $item == "custom" ]]; then
-                item_=$($temp/custom_command.sh "$title")
-            fi
-            new_title=$new_title$item_${name_part#"$item"}
-        else
-            echo "this name donot exist in video_name_allowed"
-            exit;
-        fi 
-    done
-
-    if [[ -z $auto_define_title_name ]]; then
         auto_define_title_name=$new_title
     fi
 
@@ -198,21 +172,12 @@ elif [[ $1 == -u ]]; then
 
     if [[ $auto_compress == true ]]; then
         mv ./$temp/output.m4a ./$temp/output_compressing.m4a
-        if [[ -z $compress_param ]]; then
-            compress_param=b128
-        fi
         $HOME/sh/mcp $compress_param $HOME/sh/app/youtube2music/$temp/output_compressing.m4a $HOME/sh/app/youtube2music/$temp/output.m4a
-        if [[ ! -e "./$temp/output.m4a" ]]; then
-            exit;
-        fi
+        [[ ! -e "./$temp/output.m4a" ]] && exit
     fi
 
     osascript -e "tell application \"Music\" to add POSIX file \"${HOME}/sh/app/youtube2music/$temp/output.m4a\""
     
-elif [[ $1 == -c ]]; then
-    $HOME/sh/tools/open_file config $config_app
-elif [[ $1 == -h ]]; then
-    cat help
 elif [[ $1 == -a ]]; then
     config_name=$2
     if [[ $3 != -custom ]]; then
@@ -247,5 +212,3 @@ else
 
     ./app -u "$HOME/sh/app/youtube2music/$temp/$video_name_network$medium_type" $video_name
 fi
-
-set +f

@@ -150,3 +150,10 @@
     - deliver a feature allow downloads video from youtube
     - optimized the audio and video download process
     - accelerating the speed uses or has option -d without turning volume for audio and video
+
+# version 1.7.1
+- **date: 2025/08/12**
+- **env: macOS 15**
+- **feature**:
+    - optimized the process of any options have -d and -u
+    - optimized the code logic for more smaller app storage space usage
