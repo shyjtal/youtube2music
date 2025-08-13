@@ -157,3 +157,10 @@
 - **feature**:
     - optimized the process of any options have -d and -u
     - optimized the code logic for more smaller app storage space usage
+
+# version 1.7.2
+- **date: 2025/08/13**
+- **env: macOS 15**
+- **feature**:
+    - optimized the mapper for more efficient process of config custom
+    - optimized the code logic for more smaller app storage space usage
