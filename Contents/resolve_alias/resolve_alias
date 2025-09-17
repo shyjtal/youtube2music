@@ -16,7 +16,7 @@ resolve_alias() {
             end resolveAlias
 
             set inputAlias to POSIX file \"$input_path\" as alias
-            resolveAlias(inputAlias)")
+            resolveAlias(inputAlias)" 2>/dev/null) 
         
         # 去掉换行符，确保路径可用
         resolved=$(echo "$resolved" | tr -d '\n' | xargs)
@@ -27,6 +27,10 @@ resolve_alias() {
     fi
 }
 
+if [[ $1 == "-r" ]]; then
+    [[ -d $HOME/sh/tools/Library/resolve_alias ]] && rm -r $HOME/sh/tools/Library/resolve_alias
+    exit 0
+fi
 
 if [[ ! -e "$1" ]]; then
     echo "$1 不存在" >&2
@@ -38,9 +42,9 @@ if [[ -d "$1" ]]; then
 else
     mkdir -p $HOME/sh/tools/Library/resolve_alias
     cd $HOME/sh/tools
-
+    
     temp_local="temp"
-    while [[ -d "$temp_local" ]]; do
+    while [[ -d "$HOME/sh/tools/Library/resolve_alias/$temp_local" ]]; do
     temp_local="temp"${i}
     ((i++))
     done
@@ -61,8 +65,11 @@ else
     elif [[ -z $resolved ]]; then
         resolved="$1"
     fi
-
-    rm -r Library/resolve_alias/$temp_local
+    
+    [[ $2 != -e ]] && rm -r Library/resolve_alias/$temp_local
+    [[ $2 == -r ]] && rm -r Library/resolve_alias
 fi
 
 echo "$resolved"
+
+

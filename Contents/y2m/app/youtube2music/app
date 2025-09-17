@@ -1,19 +1,14 @@
 #!/bin/sh
-if [[ $1 == -d ]]; then
-    url=$2
-    title=$3
-    touch $temp/video_title.txt
-    touch $temp/video_info.txt
 
-    if [[ -d "$HOME/sh/app/bilibili info" ]]; then
-        bvi_type=app
-    else
-        bvi_type=dev
-    fi
+if [[ $1 == -d ]]; then
+    url=$2 && title=$3
+    touch $temp/video_info
+
+    [[ -d "$HOME/sh/app/bilibili info" ]] && bvi_type=app || bvi_type=dev
 
     if [[ "$url" == https://www.bilibili.com/* ]]; then
         $HOME/sh/bvi "$url"
-        cp $HOME/sh/$bvi_type/"bilibili info"/bv_info.txt $temp/video_info.txt
+        cp $HOME/sh/$bvi_type/"bilibili info"/bv_info.txt $temp/video_info
         load_type_audio="30232"
         load_type_video="30064+30232"
     elif [[ "$url" == https://www.youtube.com/* ]]; then
@@ -28,26 +23,15 @@ if [[ $1 == -d ]]; then
             | capture("(?<y>....)(?<m>..)(?<d>..)") 
             | "\(.y)-\(.m)-\(.d)T00:00:00Z"
         )
-        ' > $temp/video_info.txt
+        ' > $temp/video_info
         load_type_audio="140"
         load_type_video="137+140"
     fi
 
-    while IFS='=' read -r key value; do
-    if [[ -n "$key" && ! "$key" =~ ^# ]]; then
-        export "$key"="$value"
-    fi
-    done < $temp/video_info.txt
-
-    echo "$bv_title" > $temp/video_title.txt
+    source e2s $temp/video_info
     ./bin/mapper $bv_up
     cd $temp
-
-    while IFS='=' read -r key value; do
-    if [[ -n "$key" && ! "$key" =~ ^# ]]; then
-        export "$key"="$value"
-    fi
-    done < video_config
+    source e2s video_config
 
     if [[ "$medium" == "video" ]]; then
         medium_type=.mp4
@@ -74,30 +58,22 @@ if [[ $1 == -d ]]; then
     fi
 
     [[ ! -e "./output$medium_type" ]] && exit
-    
+
     [[ -n "$output_path_" ]] && output_path=$output_path_
+    mkdir -p $output_path
     mv ./output$medium_type "$output_path/$bv_title$medium_type"
 
 elif [[ $1 == -u ]]; then
     url="$2"
     title="$3"
     auto_define_title_name="$3"
-
+ 
     [[ ! -e "$url" ]] && exit
     mv "$url" ./$temp/output.m4a
 
-    while IFS='=' read -r key value; do
-    if [[ -n "$key" && ! "$key" =~ ^# ]]; then
-        export "$key"="$value"
-    fi
-    done < ./$temp/video_info.txt
-
+    source e2s ./$temp/video_info
     ./bin/mapper $bv_up
-    while IFS='=' read -r key value; do
-    if [[ -n "$key" && ! "$key" =~ ^# ]]; then
-        export "$key"="$value"
-    fi
-    done < ./$temp/video_config
+    source e2s ./$temp/video_config
     
     if [ -e "$artwork" ]; then
         ffmpeg -i ./$temp/output.m4a -map 0:a -c copy ./$temp/output_clean.m4a
@@ -125,10 +101,7 @@ elif [[ $1 == -u ]]; then
             found_in_allowed=false
             name_part=${name_parts[$i]}
             for item in "${video_name_allowed[@]}"; do
-                if [[ "$name_part" == $item* ]]; then
-                    found_in_allowed=true
-                    break
-                fi
+                [[ "$name_part" == $item* ]] && found_in_allowed=true && break
             done
 
             if [[ $found_in_allowed == "true" ]]; then
@@ -141,8 +114,7 @@ elif [[ $1 == -u ]]; then
                 fi
                 new_title=$new_title$item_${name_part#"$item"}
             else
-                echo "name part $name_part donot exist in video_name_allowed"
-                exit;
+                echo "name part $name_part donot exist in video_name_allowed" && exit;
             fi
         done
         auto_define_title_name=$new_title
@@ -152,31 +124,25 @@ elif [[ $1 == -u ]]; then
 
     if [[ $auto_compress == true ]]; then
         mv ./$temp/output.m4a ./$temp/output_compressing.m4a
-        $HOME/sh/mcp $compress_param $HOME/sh/app/youtube2music/$temp/output_compressing.m4a $HOME/sh/app/youtube2music/$temp/output.m4a
+        $HOME/sh/mcp -$compress_param $HOME/sh/app/youtube2music/$temp/output_compressing.m4a $HOME/sh/app/youtube2music/$temp/output.m4a
         [[ ! -e "./$temp/output.m4a" ]] && exit
     fi
 
     osascript -e "tell application \"Music\" to add POSIX file \"${HOME}/sh/app/youtube2music/$temp/output.m4a\""
     
 elif [[ $1 == -a ]]; then
-    config_name=$2
-    if [[ $3 != -custom ]]; then
-        config_name_new=$3
-    fi
-    
-    if [ ! -e "./resources/video_configs/$config_name" ]; then
-        cp ./resources/static/video_config_template ./resources/video_configs/$config_name
-    fi
+    config_name=$2 && cd ./resources
+    [[ $3 != -custom ]] && config_name_new=$3
+    [[ ! -e "./video_configs/$config_name" ]] && cp ./static/video_config_template ./video_configs/$config_name
     
     if [ ! -z "$config_name_new" ]; then
-        mv ./resources/video_configs/$config_name ./resources/video_configs/$config_name_new
+        mv ./video_configs/$config_name ./video_configs/$config_name_new
     else
         if [[ $3 == -custom ]]; then
-            base=$(basename "$4")
-            ext=".${base#*.}"
-            cp "$4" ./resources/custom/$config_name$ext
+            base=$(basename "$4") && ext=".${base#*.}"
+            cp "$4" ./custom/$config_name$ext
         else
-            $HOME/sh/tools/open_file "./resources/video_configs/$config_name" "$video_config_app"
+            op "./video_configs/$config_name" "$video_config_app"
         fi
     fi 
 elif [[ $1 == -l ]]; then
@@ -184,13 +150,9 @@ elif [[ $1 == -l ]]; then
 elif [[ $1 == -* ]]; then
     echo "option false"
 else
-    export output_path_=$HOME/sh/app/youtube2music/$temp
+    export output_path_=$HOME/sh/app/youtube2music/$temp/media
     ./app -d $1
-    
-    video_name=$2
-    video_name_network="$(cat $temp/video_title.txt)"
-    [[ -z video_name_network ]] && video_name_network=output
 
-    filename=$(basename $temp/input*)
-    ./app -u "$HOME/sh/app/youtube2music/$temp/$video_name_network.${filename##*.}" $video_name
+    filename=$(find "$output_path_/" -maxdepth 1 -type f ! -name ".*" -exec basename {} \; | head -n 1)
+    ./app -u "$output_path_/$filename" $2
 fi

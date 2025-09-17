@@ -1,0 +1,21 @@
+#!/bin/bash
+
+open_file() {
+    open_file="$1"
+    open_app="$2"
+    resolve_app=$(bin/mapper $open_app)
+    
+    [[ $resolve_app == "vim" ]] && open_opt=vim || open_opt="open"
+    [[ -n $2 && $open_app != "vim" ]] && open_opt="$open_opt -a"
+    $open_opt"$resolve_app" "$open_file"
+}
+
+if [[ -z $2 ]]; then
+    file_name=$(basename "$1")
+    file_name="${file_name%.*}"
+    [[ $auto_lower=="true" ]] && file_name=$(echo "$file_name" | tr '[:upper:]' '[:lower:]')
+    open_app_auto="$file_name$defalut_tile"
+fi
+
+[[ -n $open_app_auto ]] && open_app_=${!open_app_auto} || open_app_="$2"
+open_file "$1" "$open_app_"

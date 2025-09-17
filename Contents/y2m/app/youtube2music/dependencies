@@ -1,6 +1,6 @@
 dev/bvi
 mcp
+op
 brew/ffmpeg
 brew/yt-dlp
-tool/open_file
 brew/python3

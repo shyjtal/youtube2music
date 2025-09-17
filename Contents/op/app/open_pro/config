@@ -1,0 +1,13 @@
+version=1.0.1
+git_repo=OpenPro
+
+config_app=TextEdit
+readme_app=vscode
+
+defalut_tile=_app
+auto_lower=true
+
+#app_key=vaule
+app_vscode=Visual Studio Code
+app_txt=TextEdit
+app_eread=小绿鲸英文文献阅读器

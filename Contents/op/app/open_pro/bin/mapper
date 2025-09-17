@@ -1,0 +1,13 @@
+#!/bin/bash
+
+mapper_app() {
+    app_simple_name="$1"
+    app_complex_name="$app_simple_name"   
+    
+    for var in ${!app_*}; do
+        [[ "app_$app_simple_name" == $var ]] && app_complex_name="${!var}"
+    done;
+}
+
+mapper_app "$1"
+echo $app_complex_name

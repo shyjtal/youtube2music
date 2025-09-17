@@ -164,3 +164,9 @@
 - **feature**:
     - optimized the mapper for more efficient process of config custom
     - optimized the code logic for more smaller app storage space usage
+
+# version 1.7.3
+- **date: 2025/09/17**
+- **env: macOS 15**
+- **feature**:
+    - fix a bug that cannot update media with special name to Apple Music

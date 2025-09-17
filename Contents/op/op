@@ -1,0 +1,24 @@
+#!/bin/bash
+export PATH="$HOME/sh/tools:$PATH"
+export PATH="$HOME/sh:$PATH"
+[[ -e "$1" ]] && abs_path="$(realpath "$1")"
+cd $HOME/sh/app/open_pro
+source e2s config
+
+if [[ $1 == -version ]]; then
+    echo $version
+elif [[ $1 == -readme ]]; then
+    op README.md
+elif [[ $1 == -h ]]; then
+    cat help
+elif [[ $1 == -c ]]; then
+    op config
+elif [[ $1 == -* ]]; then
+    ./bin/cmd "$@"
+else
+    if [[ -z $abs_path ]]; then
+        ./app "$@"
+    else
+        ./app "$abs_path"  "${@:2}"
+    fi
+fi
