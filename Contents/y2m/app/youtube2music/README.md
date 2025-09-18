@@ -170,3 +170,9 @@
 - **env: macOS 15**
 - **feature**:
     - fix a bug that cannot update media with special name to Apple Music
+
+# version 1.7.4
+- **date: 2025/09/18**
+- **env: macOS 15**
+- **feature**:
+    - fix a bug that cannot choose which config be used (-p) when audio matching with config

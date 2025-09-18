@@ -29,7 +29,7 @@ if [[ $1 == -d ]]; then
     fi
 
     source e2s $temp/video_info
-    ./bin/mapper $bv_up
+    [[ -z $path_config ]] && ./bin/mapper $bv_up
     cd $temp
     source e2s video_config
 
@@ -72,7 +72,7 @@ elif [[ $1 == -u ]]; then
     mv "$url" ./$temp/output.m4a
 
     source e2s ./$temp/video_info
-    ./bin/mapper $bv_up
+    [[ -z $path_config ]] && ./bin/mapper $bv_up
     source e2s ./$temp/video_config
     
     if [ -e "$artwork" ]; then
