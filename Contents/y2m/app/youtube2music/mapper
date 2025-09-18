@@ -1,0 +1,34 @@
+#!/bin/sh
+up_name_input=$1
+found=false
+
+for file in "./resources/video_configs"/*; do  
+  unset matching
+  unset matching_sub
+  filename=$(basename "$file")
+  source e2s ./resources/video_configs/$filename
+  IFS=',' read -ra matching <<< "$matching"
+
+  if [[ $found == false ]]; then
+    for item in "${matching[@]}"; do
+      if [[ "$up_name_input" == $item ]]; then
+        source e2s $temp/video_info bv_title url platform
+        [[ $platform == "youtube" ]] && defalut_matching_sub=watch || defalut_matching_sub=video
+        [[ -z $matching_sub ]] && matching_sub=$defalut_matching_sub
+        if [[ "$url" == *$matching_sub* ]]; then
+          cp ./resources/video_configs/$filename ./$temp/video_config
+          if [[ $name == *@custom* ]]; then
+            filename=$(basename ./resources/custom/$filename*)
+            ext="${filename##*.}"
+            cp ./resources/custom/$filename ./$temp/custom.$ext
+            exe_app=$(eval "echo \$exe_$ext")
+            echo "$exe_app ./resources/custom/$filename \"$bv_title\"" > ./$temp/custom_command.sh
+            chmod +x ./$temp/custom_command.sh
+          fi
+
+          exit;
+        fi
+      fi
+    done
+  fi
+done

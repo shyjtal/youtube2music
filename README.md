@@ -176,3 +176,9 @@
 - **env: macOS 15**
 - **feature**:
     - fix a bug that cannot choose which config be used (-p) when audio matching with config
+
+# version 1.8
+- **date: 2025/09/19**
+- **env: macOS 15**
+- **feature**:
+    - update a video configs (mapper_sub) to mapper different config by url for same audio author

@@ -11,6 +11,7 @@ if [[ $1 == -d ]]; then
         cp $HOME/sh/$bvi_type/"bilibili info"/bv_info.txt $temp/video_info
         load_type_audio="30232"
         load_type_video="30064+30232"
+        load_platform=bilibili
     elif [[ "$url" == https://www.youtube.com/* ]]; then
         yt-dlp -j "$url" | jq -r '
         "bv_title=" + .title,
@@ -26,7 +27,10 @@ if [[ $1 == -d ]]; then
         ' > $temp/video_info
         load_type_audio="140"
         load_type_video="137+140"
+        load_platform=youtube
     fi
+    echo url="$url" >> $temp/video_info
+    echo platform=$load_platform >> $temp/video_info
 
     source e2s $temp/video_info
     [[ -z $path_config ]] && ./bin/mapper $bv_up
@@ -72,6 +76,7 @@ elif [[ $1 == -u ]]; then
     mv "$url" ./$temp/output.m4a
 
     source e2s ./$temp/video_info
+
     [[ -z $path_config ]] && ./bin/mapper $bv_up
     source e2s ./$temp/video_config
     

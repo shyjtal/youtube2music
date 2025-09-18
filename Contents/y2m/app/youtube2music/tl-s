@@ -1,0 +1,14 @@
+artist=章天亮
+album=天亮短讯
+composer=Jitao Shi
+artwork=/Users/shijitao/Pictures/music/tl-s.png
+output_path=/Users/shijitao/Desktop
+year=2025
+genre=politics
+medium=audio
+volume=1.0
+auto_compress=true
+compress_param=b128
+name=@date @title
+matching=*章天亮,天亮時分
+matching_sub=short
