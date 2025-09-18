@@ -1,0 +1,20 @@
+#!/bin/bash
+export_from_file="$1"
+select_idx=2
+export_key_var="$select_idx" && export_key="${!export_key_var}"
+
+# if multi-export, must order params by file oder
+while IFS='=' read -r key value || [[ -n "$key" ]]; do
+  [[ -z $export_key && $select_idx != 2 ]] && break
+  if [[ -n "$key" && ! "$key" =~ ^# ]]; then
+
+      [[ -n $export_key && $export_key != "$key" ]] && continue
+      export "$key=$value"
+      if [[ -n $export_key && $export_key == "$key" ]]; then
+        ((select_idx++))
+        [[ $select_idx -gt $# ]] && break
+        export_key_var="$select_idx" && export_key="${!export_key_var}"
+      fi
+
+  fi
+done < "$export_from_file"
