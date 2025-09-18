@@ -1,6 +1,7 @@
 dev/bvi
 mcp
 op
+tool/e2s
 brew/ffmpeg
 brew/yt-dlp
 brew/python3

@@ -1,27 +1,26 @@
 #!/bin/sh
 set -f  # 禁用路径扩展
+export PATH="$HOME/sh/tools:$PATH"
+export PATH="$HOME/sh:$PATH"
 cd ~/sh/app/youtube2music
-
-while IFS='=' read -r key value; do
-  if [[ -n "$key" && ! "$key" =~ ^# ]]; then
-    export "$key"="$value"
-  fi
-done < config
+source e2s config
 
 temp_local="temp"
-
 while [[ -d "$temp_local" ]]; do
   temp_local="temp"${i}
   ((i++))
 done
-
 export temp=$temp_local
 mkdir $temp_local
 
 if [[ $1 == "-version" ]]; then
     echo $version
 elif [[ $1 == "-readme" ]]; then
-    $HOME/sh/tools/open_file README.md $readme_app
+    op README.md
+elif [[ $1 == -h ]]; then
+    cat help
+elif [[ $1 == -c ]]; then
+    op config
 elif [[ $1 == -p ]]; then
     cp ./resources/video_configs/$2 ./$temp_local/video_config
     ./app "${@:3}"
@@ -31,5 +30,4 @@ else
 fi
 
 rm -r $temp_local
-
 set +f

@@ -11,3 +11,4 @@ auto_compress=true
 compress_param=b128
 name=@date @title
 matching=u,u
+matching_sub=url
