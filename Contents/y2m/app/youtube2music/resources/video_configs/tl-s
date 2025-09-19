@@ -11,4 +11,5 @@ auto_compress=true
 compress_param=b128
 name=@date @title
 matching=*章天亮,天亮時分
-matching_sub=short
+# @url:$key
+matching_sub=@url:short
