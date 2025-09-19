@@ -167,18 +167,26 @@
 
 # version 1.7.3
 - **date: 2025/09/17**
-- **env: macOS 15**
+- **env: macOS 16**
 - **feature**:
     - fix a bug that cannot update media with special name to Apple Music
 
 # version 1.7.4
 - **date: 2025/09/18**
-- **env: macOS 15**
+- **env: macOS 16**
 - **feature**:
     - fix a bug that cannot choose which config be used (-p) when audio matching with config
 
 # version 1.8
 - **date: 2025/09/19**
-- **env: macOS 15**
+- **env: macOS 16**
 - **feature**:
     - update a video configs (mapper_sub) to mapper different config by url for same audio author
+
+# version 1.8.1
+- **date: 2025/09/20**
+- **env: macOS 16**
+- **feature**:
+    - add a serial configurations in config to self-define load code for audio and video
+    - optimized the efficiency for using mapper opration
+    - optimized the efficiency for opt incluing -u

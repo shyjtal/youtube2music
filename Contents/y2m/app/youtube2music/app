@@ -7,11 +7,9 @@ if [[ $1 == -d ]]; then
     [[ -d "$HOME/sh/app/bilibili info" ]] && bvi_type=app || bvi_type=dev
 
     if [[ "$url" == https://www.bilibili.com/* ]]; then
-        $HOME/sh/bvi "$url"
+        bvi "$url"
         cp $HOME/sh/$bvi_type/"bilibili info"/bv_info.txt $temp/video_info
-        load_type_audio="30232"
-        load_type_video="30064+30232"
-        load_platform=bilibili
+        load_platform=bilibili && load_code=$load_code_bilibili_audio
     elif [[ "$url" == https://www.youtube.com/* ]]; then
         yt-dlp -j "$url" | jq -r '
         "bv_title=" + .title,
@@ -25,28 +23,24 @@ if [[ $1 == -d ]]; then
             | "\(.y)-\(.m)-\(.d)T00:00:00Z"
         )
         ' > $temp/video_info
-        load_type_audio="140"
-        load_type_video="137+140"
-        load_platform=youtube
+        load_platform=youtube && load_code=$load_code_youtube_audio
     fi
     echo url="$url" >> $temp/video_info
     echo platform=$load_platform >> $temp/video_info
 
-    source e2s $temp/video_info
-    [[ -z $path_config ]] && ./bin/mapper $bv_up
+    [[ -z $path_config ]] && ./bin/mapper
     cd $temp
     source e2s video_config
 
     if [[ "$medium" == "video" ]]; then
         medium_type=.mp4
-        load_type=$load_type_video
+        load_code_video="load_code_${load_platform}_video" && load_code=$load_code+${!load_code_video}
     else
-        download_type=.m4a
-        medium_type=.m4a
-        load_type=$load_type_audio
+        download_type=.m4a && medium_type=.m4a
     fi
 
-    yt-dlp -o "input$download_type" "$url" -f "$load_type"
+    yt-dlp -o "input$download_type" "$url" -f "$load_code"
+
     [[ "$medium" == "video" ]] && download_type=$medium_type
     [[ ! -e "input$download_type" ]] && exit
     
@@ -65,19 +59,15 @@ if [[ $1 == -d ]]; then
 
     [[ -n "$output_path_" ]] && output_path=$output_path_
     mkdir -p $output_path
+    source e2s video_info bv_title
     mv ./output$medium_type "$output_path/$bv_title$medium_type"
 
 elif [[ $1 == -u ]]; then
-    url="$2"
-    title="$3"
-    auto_define_title_name="$3"
- 
+    url="$2" && title="$3" && auto_define_title_name="$3"
     [[ ! -e "$url" ]] && exit
     mv "$url" ./$temp/output.m4a
 
     source e2s ./$temp/video_info
-
-    [[ -z $path_config ]] && ./bin/mapper $bv_up
     source e2s ./$temp/video_config
     
     if [ -e "$artwork" ]; then
@@ -89,11 +79,10 @@ elif [[ $1 == -u ]]; then
     [[ ! -e "./$temp/output.m4a" ]] && exit
     
     if [ -z "$title" ]; then
-        if [[ ! -z "$bv_title" ]]; then
+        if [[ -n "$bv_title" ]]; then
             title="$bv_title"
         else
-            filename=$(basename "$url")
-            title="${filename%.*}"
+            filename=$(basename "$url") && title="${filename%.*}"
         fi
     fi
     
@@ -103,33 +92,29 @@ elif [[ $1 == -u ]]; then
 
     if [[ -z $auto_define_title_name ]]; then
         for i in "${!name_parts[@]}"; do
-            found_in_allowed=false
-            name_part=${name_parts[$i]}
+            found_in_allowed=false && name_part=${name_parts[$i]}
             for item in "${video_name_allowed[@]}"; do
                 [[ "$name_part" == $item* ]] && found_in_allowed=true && break
             done
+            [[ $found_in_allowed != "true" ]] && echo "name part $name_part donot exist in video_name_allowed" && exit;
 
-            if [[ $found_in_allowed == "true" ]]; then
-                if [[ $item == "date" ]]; then
-                    item_=${bv_release:0:10}
-                elif [[ $item == "title" ]]; then
-                    item_=$title
-                elif [[ $item == "custom" ]]; then
-                    item_=$($temp/custom_command.sh "$title")
-                fi
-                new_title=$new_title$item_${name_part#"$item"}
-            else
-                echo "name part $name_part donot exist in video_name_allowed" && exit;
+            if [[ $item == "date" ]]; then
+                item_=${bv_release:0:10}
+            elif [[ $item == "title" ]]; then
+                item_=$title
+            elif [[ $item == "custom" ]]; then
+                item_=$($temp/custom_command.sh "$title")
             fi
+
+            auto_define_title_name=$auto_define_title_name$item_${name_part#"$item"}
         done
-        auto_define_title_name=$new_title
     fi
 
     AtomicParsley ./$temp/output.m4a --artist "$artist" --album "$album" --composer "$composer" --title "$auto_define_title_name" --year "$year" --genre "$genre" --artwork $artwork --overWrite
 
     if [[ $auto_compress == true ]]; then
         mv ./$temp/output.m4a ./$temp/output_compressing.m4a
-        $HOME/sh/mcp -$compress_param $HOME/sh/app/youtube2music/$temp/output_compressing.m4a $HOME/sh/app/youtube2music/$temp/output.m4a
+        mcp -$compress_param $HOME/sh/app/youtube2music/$temp/output_compressing.m4a $HOME/sh/app/youtube2music/$temp/output.m4a
         [[ ! -e "./$temp/output.m4a" ]] && exit
     fi
 

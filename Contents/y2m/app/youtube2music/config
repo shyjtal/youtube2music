@@ -1,9 +1,9 @@
-version=1.8
+version=1.8.1
 git_repo=youtube2music
 
 readme_app=vscode
 video_config_app=txt
-config_app=vim
+config_app=txt
 
 defalut=unknown
 video_name_allowed=date,title,custom
@@ -11,3 +11,9 @@ auto_compress=true
 compress_param=b128
 
 exe_py=python3
+
+# for video -> v+a
+load_code_bilibili_audio=30232
+load_code_bilibili_video=30064
+load_code_youtube_audio=140
+load_code_youtube_video=137
