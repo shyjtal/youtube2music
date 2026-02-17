@@ -190,3 +190,16 @@
     - add a serial configurations in config to self-define load code for audio and video
     - optimized the efficiency for using mapper opration
     - optimized the efficiency for opt incluing -u
+
+# version 2
+- **date: 2026/02/17**
+- **env: macOS 16**
+- **feature**:
+    - deliver a secure application permission file system to prevent developer-defined configurations from being overwritten
+    - deliver a multi-users file arhitecture to separate app and user data
+    - auto process music artwork to fit size
+    - more options for managing video configs (eg: delete, rename, update, ...)
+    - users can list all audio for a video config (-l $video_config)
+    - users can choose download format for video
+    - add a new configuration to auto open dir when use -d
+    - add a new feature to allow user to upload video to Apple Music (cannot sync to cloud)

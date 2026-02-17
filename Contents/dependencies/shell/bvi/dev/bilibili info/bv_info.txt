@@ -1,0 +1,6 @@
+bv_title=老杜Vue视频教程，Vue2，Vue3实战精讲，一套通关vue
+bv_up=动力节点
+bv_uid=76542346
+bv_playback=820519
+bv_likes=5147
+bv_release=2023-04-04T02:06:02Z

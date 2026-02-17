@@ -1,0 +1,25 @@
+#!/bin/bash
+export PATH="$HOME/sh/tools:$PATH"
+export PATH="$HOME/sh:$PATH"
+[[ -e "$1" ]] && abs_path="$(realpath "$1")"
+[[ -z $1 ]] && abs_path=$PWD
+cd $HOME/sh/app/open_pro
+source e2s config && source e2s system_config
+
+if [[ $1 == -version ]]; then
+    echo $version
+elif [[ $1 == -h ]]; then
+    cat help
+elif [[ $1 == -c ]]; then
+    op config
+elif [[ $1 == -* ]]; then
+    ./bin/cmd "$@"
+else
+    if [[ -z $abs_path ]]; then
+        abs_path=$HOME/$1
+        touch $1 && ./app $abs_path
+    else
+        [[ ! -e $abs_path ]] && touch $abs_path
+        ./app "$abs_path"  "${@:2}"
+    fi
+fi

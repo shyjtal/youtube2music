@@ -1,0 +1,40 @@
+#!/bin/sh
+
+if [ -e "$1" ]; then
+    dir_path=$($HOME/sh/tools/resolve_alias "$1") && out_path="$2"
+elif [[ -e "$2" && $1 == -* ]]; then
+    dir_path=$($HOME/sh/tools/resolve_alias "$2") && out_path="$3"
+    compress_mode_src=$1
+    compress_mode="${compress_mode_src:1:1}" && compress_param="${compress_mode_src:2}"
+elif [[ $1 == -* && -z $2 ]]; then
+    echo "option false" && exit
+else
+    echo "input path is not exist" && exit
+fi
+
+if [ -f "$dir_path" ]; then
+    [[ -z "$out_path" ]] && out_path="$(dirname "$dir_path")"
+    mkdir ./$temp/media && cp "$dir_path" ./$temp/media/
+    dir_path="$HOME/sh/app/media_compress/$temp/media"
+elif [ -d "$dir_path" ]; then
+    [[ -z "$out_path" ]] && out_path="$dir_path"
+else
+    echo "$dir_path is not exist" && exit
+fi
+
+for media_type in $(find "$dir_path" -type f ! -name '.*' | awk -F. '/\./ {print $NF}' | sort -u); do
+    media_type=$(echo "$media_type" | tr '[:upper:]' '[:lower:]')
+
+    if [[ -z $compress_mode ]]; then
+        compress_mode=default_compress_$media_type && compress_param=default_param_$media_type
+        compress_mode=${!compress_mode} && compress_param=${!compress_param}
+    fi
+
+    [[ -z $compress_mode ]] && compress_mode=$default_compress && compress_param=$default_param
+
+    for file in "$dir_path"/*; do
+        file_media_type="${file##*.}"
+        file_media_type=$(echo "$file_media_type" | tr '[:upper:]' '[:lower:]')
+        [[ -f "$file" && $file_media_type == $media_type ]] && ./app -${compress_mode} ${compress_param} "$file" "$out_path"
+    done    
+done

@@ -8,17 +8,48 @@ fi
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 file_name=$(basename "$script_dir")
 
-if [[ -f "$script_dir/Resources/homebrew.sh" ]]; then
-    chmod +x "$script_dir/Resources/homebrew.sh"
-    "$script_dir/Resources/homebrew.sh"
+if [[ -f "$script_dir/Resources/brew/homebrew.sh" ]]; then
+    chmod +x "$script_dir/Resources/brew/homebrew.sh"
+    "$script_dir/Resources/brew/homebrew.sh"
 fi
 
-cd $script_dir/Contents
-for item in ./*; do
-    if [[ -d "$item" ]]; then
-        ./"$item"/Install.command
-    fi
-done
+if [[ -d "$script_dir/Contents/$file_name" ]]; then
+    cp $script_dir/Resources/Install_shell.command $script_dir/Contents/$file_name/Install.command
+    $script_dir/Contents/$file_name/Install.command
+fi
+
+if [[ -d $script_dir/Contents/dependencies/shell ]]; then
+    cd $script_dir/Contents/dependencies/shell
+    for item in ./*; do
+        if [[ -d "$item" ]]; then
+            cp $script_dir/Resources/Install_shell.command ./"$item"/Install.command
+            ./"$item"/Install.command
+        fi
+    done
+    cd ../
+fi
+
+if [[ -d $script_dir/Contents/dependencies/tool ]]; then
+     cd $script_dir/Contents/dependencies/tool
+    for item in ./*; do
+        if [[ -d "$item" ]]; then
+            cp $script_dir/Resources/Install_tool.command ./"$item"/Install.command
+            ./"$item"/Install.command
+        fi
+    done
+    cd ../
+fi
+
+if [[ -d $script_dir/Contents/dependencies/app ]]; then
+    cd $script_dir/Contents/dependencies/app
+    for item in ./*; do
+        if [[ -d "$item" ]]; then
+            cp $script_dir/Resources/Install_app.command ./"$item"/Install.command
+            ./"$item"/Install.command
+        fi
+    done
+    cd ../
+fi
 
 grep -q '$HOME/sh' ~/.zshrc || echo 'export PATH="$HOME/sh:$PATH"' >> ~/.zshrc
 source ~/.zshrc

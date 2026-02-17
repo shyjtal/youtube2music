@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [[ $1 != "update" ]]; then
+    cookies_from_browser=safari
+    local_path=$HOME/"Library/Application Support/com.shijitao.youtube2music"
+    mkdir -p "$local_path"
+    cp -r $HOME/sh/app/youtube2music/resources/video_configs "$local_path"/
+    cp -r $HOME/sh/app/youtube2music/resources/customs "$local_path"/
+fi
+
+mkdir -p $HOME/.config/yt-dlp
+touch $HOME/.config/yt-dlp/config
+echo "--cookies-from-browser $cookies_from_browser" > $HOME/.config/yt-dlp/config

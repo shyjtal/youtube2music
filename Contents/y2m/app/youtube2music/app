@@ -5,144 +5,136 @@ if [[ $1 == -d ]]; then
     touch $temp/video_info
 
     [[ -d "$HOME/sh/app/bilibili info" ]] && bvi_type=app || bvi_type=dev
+    bvi "$url" && cp $HOME/sh/$bvi_type/"bilibili info"/bv_info.txt $temp/video_info
+    load_platform=$(echo "$url" | sed -n 's/.*www\.\([^\.]*\)\.com.*/\1/p')
+    [[ $load_platform != youtube && $load_platform != bilibili ]] && echo "false url" && exit
+    load_code_key=load_code_${load_platform}_audio && load_code=${!load_code_key}
+  
+    echo url="$url" >> $temp/video_info && echo platform=$load_platform >> $temp/video_info
+    [[ -z $path_config ]] && ./libexec/mapper
+    cd $temp && source e2s video_config
 
-    if [[ "$url" == https://www.bilibili.com/* ]]; then
-        bvi "$url"
-        cp $HOME/sh/$bvi_type/"bilibili info"/bv_info.txt $temp/video_info
-        load_platform=bilibili && load_code=$load_code_bilibili_audio
-    elif [[ "$url" == https://www.youtube.com/* ]]; then
-        yt-dlp -j "$url" | jq -r '
-        "bv_title=" + .title,
-        "bv_up=" + .uploader,
-        "bv_uid=" + (.uploader_id // "N/A"),
-        "bv_playback=" + (.view_count | tostring),
-        "bv_likes=" + (.like_count | tostring),
-        "bv_release=" + (
-            .upload_date 
-            | capture("(?<y>....)(?<m>..)(?<d>..)") 
-            | "\(.y)-\(.m)-\(.d)T00:00:00Z"
-        )
-        ' > $temp/video_info
-        load_platform=youtube && load_code=$load_code_youtube_audio
-    fi
-    echo url="$url" >> $temp/video_info
-    echo platform=$load_platform >> $temp/video_info
-
-    [[ -z $path_config ]] && ./bin/mapper
-    cd $temp
-    source e2s video_config
-
-    if [[ "$medium" == "video" ]]; then
-        medium_type=.mp4
-        load_code_video="load_code_${load_platform}_video" && load_code=$load_code+${!load_code_video}
-    else
-        download_type=.m4a && medium_type=.m4a
-    fi
-
+    [[ "$medium" == "video" ]] && medium_type=.mp4 && load_code_video="load_code_${load_platform}_video" && load_code=$load_code+${!load_code_video}
+    [[ "$medium" == "audio" ]] && download_type=.m4a && medium_type=.m4a
+    [[ -n $download_code ]] && load_code=$download_code
+    
+    [[ ! -z $load_code_force ]] && load_code=$load_code_force
     yt-dlp -o "input$download_type" "$url" -f "$load_code"
-
-    [[ "$medium" == "video" ]] && download_type=$medium_type
+    
+    if [[ "$medium" == "video" ]]; then
+        download_type=$medium_type
+        [[ -e "input" ]] && mv "input" input$download_type
+    fi
     [[ ! -e "input$download_type" ]] && exit
     
     if [[ -z "$volume" || "$volume" == "1.0" ]]; then     
         mv input$download_type output$medium_type
     else
-        if [[ "$medium" == "video" ]]; then
-            ffmpeg -i input$download_type -af "volume=$volume" -c:v copy output$medium_type   
-        else
-            ffmpeg -i input$download_type -vn -c:a aac -b:a 192k -filter:a "volume=$volume" output$medium_type 
-        fi
-        [[ ! $? -eq 0 ]] && rm ./output$medium_type
+        [[ "$medium" == "video" ]] && ffmpeg -i input$download_type -af "volume=$volume" -c:v copy output$medium_type
+        [[ "$medium" == "audio" ]] && ffmpeg -i input$download_type -vn -c:a aac -b:a 192k -filter:a "volume=$volume" output$medium_type 
+        [[ ! $? -eq 0 ]] && exit
     fi
 
-    [[ ! -e "./output$medium_type" ]] && exit
-
-    [[ -n "$output_path_" ]] && output_path=$output_path_
-    mkdir -p $output_path
-    source e2s video_info bv_title
-    mv ./output$medium_type "$output_path/$bv_title$medium_type"
+    [[ -n "$output_path_" ]] && output_path=$output_path_ && mkdir -p $output_path
+    source e2s video_info bv_title && mv ./output$medium_type "$output_path/$bv_title$medium_type"
+    [[ $open_dir == "true" ]] && $HOME/sh/op "$output_path"
 
 elif [[ $1 == -u ]]; then
     url="$2" && title="$3" && auto_define_title_name="$3"
     [[ ! -e "$url" ]] && exit
-    mv "$url" ./$temp/output.m4a
-
-    source e2s ./$temp/video_info
+    base_load_file=$(basename "$url") && ext_load_file=".${base_load_file#*.}"
+    mv "$url" ./$temp/output$ext_load_file
+    [[ -f ./$temp/video_info ]] && source e2s ./$temp/video_info
     source e2s ./$temp/video_config
     
-    if [ -e "$artwork" ]; then
-        ffmpeg -i ./$temp/output.m4a -map 0:a -c copy ./$temp/output_clean.m4a
-        mv ./$temp/output_clean.m4a ./$temp/output.m4a
-        [[ ! $? -eq 0 ]] && rm ./$temp/output.m4a
-    fi
+    [[ -z "$title" ]] && title="$bv_title"
+    [[ -z "$title" ]] && filename=$(basename "$url") && title="${filename%.*}"
 
-    [[ ! -e "./$temp/output.m4a" ]] && exit
-    
-    if [ -z "$title" ]; then
-        if [[ -n "$bv_title" ]]; then
-            title="$bv_title"
-        else
-            filename=$(basename "$url") && title="${filename%.*}"
+    if [ -e "$artwork" ]; then
+        if [[ $ext_load_file == ".m4a" ]]; then
+            ffmpeg -i ./$temp/output$ext_load_file -map 0:a -c copy ./$temp/output_clean$ext_load_file
+        elif [[ $ext_load_file == ".mp4" || $ext_load_file == ".m4v" ]]; then
+            ffmpeg -i ./$temp/output$ext_load_file -map 0 -c copy ./$temp/output_clean.m4v
+            ext_load_file=.m4v
+            AtomicParsley ./$temp/output_clean.m4v --stik "Music Video" --overWrite
         fi
+        [[ ! $? -eq 0 ]] && exit || mv ./$temp/output_clean$ext_load_file ./$temp/output$ext_load_file
     fi
     
-    [[ -z $name ]] && name="@title"
+    [[ -z $name ]] && name=@title
+    [[ -z $auto_define_title_name ]] && item_for_title=true || item_for_title=false
     IFS=',' read -ra video_name_allowed <<< "$video_name_allowed"
     IFS='@' read -ra name_parts <<< "${name:1}"
-
-    if [[ -z $auto_define_title_name ]]; then
-        for i in "${!name_parts[@]}"; do
-            found_in_allowed=false && name_part=${name_parts[$i]}
-            for item in "${video_name_allowed[@]}"; do
-                [[ "$name_part" == $item* ]] && found_in_allowed=true && break
-            done
-            [[ $found_in_allowed != "true" ]] && echo "name part $name_part donot exist in video_name_allowed" && exit;
-
-            if [[ $item == "date" ]]; then
-                item_=${bv_release:0:10}
-            elif [[ $item == "title" ]]; then
-                item_=$title
-            elif [[ $item == "custom" ]]; then
-                item_=$($temp/custom_command.sh "$title")
-            fi
-
-            auto_define_title_name=$auto_define_title_name$item_${name_part#"$item"}
+    
+    for i in "${!name_parts[@]}"; do
+        [[ $item_for_title == false ]] && break
+        found_in_allowed=false && name_part=${name_parts[$i]}
+        for item in "${video_name_allowed[@]}"; do
+            [[ "$name_part" == $item* ]] && found_in_allowed=true && break
         done
-    fi
+        [[ $found_in_allowed != "true" ]] && echo "name part $name_part donot exist in video_name_allowed" && exit;
+        case $item in
+            date)   item_=${bv_release:0:10} ;;
+            title)  item_=$title ;;
+            custom) item_=$("$temp"/custom_command.sh "$title") ;;
+        esac
+        auto_define_title_name=$auto_define_title_name$item_${name_part#"$item"}
+    done
 
-    AtomicParsley ./$temp/output.m4a --artist "$artist" --album "$album" --composer "$composer" --title "$auto_define_title_name" --year "$year" --genre "$genre" --artwork $artwork --overWrite
-
-    if [[ $auto_compress == true ]]; then
-        mv ./$temp/output.m4a ./$temp/output_compressing.m4a
-        mcp -$compress_param $HOME/sh/app/youtube2music/$temp/output_compressing.m4a $HOME/sh/app/youtube2music/$temp/output.m4a
-        [[ ! -e "./$temp/output.m4a" ]] && exit
-    fi
-
-    osascript -e "tell application \"Music\" to add POSIX file \"${HOME}/sh/app/youtube2music/$temp/output.m4a\""
+    local_music_name=$HOME/$music_path/$artist/$album/
+    [[ $like_local_select == true ]] && local_music_name=$local_music_name/*$auto_define_title_name* || local_music_name=$local_music_name/$auto_define_title_name
+    [[ $override != true && -e $local_music_name ]] && echo "music $local_music_name is existing" && exit
     
+    AtomicParsley ./$temp/output$ext_load_file --artist "$artist" --album "$album" --composer "$composer" --title "$auto_define_title_name" --year "$year" --genre "$genre" --artwork $artwork --overWrite
+    [[ $auto_compress == true ]] && mcp -$compress_param $HOME/sh/app/youtube2music/$temp/output$ext_load_file $HOME/sh/app/youtube2music/$temp/output$ext_load_file
+    [[ ! -e "./$temp/output$ext_load_file" ]] && exit
+
+    artwork_base="${artwork%.*}"
+    [[ -n $artwork_base-resized-* ]] && artwork_resize=$(ls $artwork_base-resized-* 2>/dev/null | head -n 1)
+    [[ -n "$artwork_resize" ]] && cp "$artwork_resize" "$artwork" && rm $artwork_base-resized-*
+    osascript -e "tell application \"Music\" to add POSIX file \"${HOME}/sh/app/youtube2music/$temp/output$ext_load_file\""
+
 elif [[ $1 == -a ]]; then
-    config_name=$2 && cd ./resources
-    [[ $3 != -custom ]] && config_name_new=$3
-    [[ ! -e "./video_configs/$config_name" ]] && cp ./static/video_config_template ./video_configs/$config_name
-    
-    if [ ! -z "$config_name_new" ]; then
-        mv ./video_configs/$config_name ./video_configs/$config_name_new
-    else
-        if [[ $3 == -custom ]]; then
-            base=$(basename "$4") && ext=".${base#*.}"
-            cp "$4" ./custom/$config_name$ext
-        else
-            op "./video_configs/$config_name" "$video_config_app"
+    cd $HOME/"$local_path" && config_name=$2 && vc_opt=$3
+    [[ -z $2 ]] && cat $HOME/sh/app/youtube2music/resources/templates/video_config_template && exit
+    if [[ -z $vc_opt ]]; then
+        [[ ! -e "./video_configs/$config_name" ]] && cp $HOME/sh/app/youtube2music/resources/templates/video_config_template ./video_configs/$config_name
+        op "./video_configs/$config_name" "$video_config_app"
+    elif [[ $vc_opt == -mv ]]; then
+        mv ./video_configs/$config_name ./video_configs/$4
+    elif [[ $vc_opt == -rm ]]; then
+        img_path_vc=$(config_opt ./video_configs/$config_name artwork)
+        if [[ -f $img_path_vc ]]; then
+            [[ $img_trash == "true" ]] && mv $img_path_vc $music_img_path/trash/ || rm $img_path_vc
         fi
-    fi 
+        rm ./video_configs/$config_name
+    elif [[ $vc_opt == -custom ]]; then
+        [[ ! -f "$4" ]] && echo $4 is not existing && exit
+        base=$(basename "$4") && ext=".${base#*.}" && cp "$4" ./customs/$config_name$ext
+    elif [[ $vc_opt == -set ]]; then
+        config_k_vc=$4 && config_v_vc=$5
+        c_k_exist=$(config_opt $HOME/sh/app/youtube2music/resources/templates/video_config_template $config_k_vc)
+        if [[ $config_k_vc == "artwork" ]]; then
+            [[ -f $config_v_vc ]] && mv $config_v_vc $music_img_path/$config_name.jpg || unset c_k_exist
+            config_v_vc="$music_img_path/$config_name.jpg"
+        fi
+        [[ -n $c_k_exist ]] && config_opt ./video_configs/$config_name $config_k_vc "$config_v_vc" || { echo "key or value is false"; exit; } 
+    else
+        echo "option false" && exit
+    fi
+
 elif [[ $1 == -l ]]; then
-    ls resources/video_configs
+    [[ -z $2 ]] && ls $HOME/"$local_path"/video_configs && exit
+    [[ -f "$HOME/"$local_path"/video_configs/$2" ]] && source e2s $HOME/"$local_path"/video_configs/$2 || exit
+    cd "$HOME/$music_path/$artist/$album"
+    [[ -n $3 ]] && ls *$3* || ls
+elif [[ $1 == -F ]]; then
+    yt-dlp -F $2
 elif [[ $1 == -* ]]; then
     echo "option false"
 else
     export output_path_=$HOME/sh/app/youtube2music/$temp/media
-    ./app -d $1
-
+    ./app -d $1 && [[ ! -d $output_path_ ]] && exit 
     filename=$(find "$output_path_/" -maxdepth 1 -type f ! -name ".*" -exec basename {} \; | head -n 1)
     ./app -u "$output_path_/$filename" $2
 fi

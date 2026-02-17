@@ -1,0 +1,18 @@
+multi_temp() {
+    
+    local app_root=$1
+    local file_local_base=$2
+
+    [[ -z $1 ]] && app_root="$(pwd)"
+    [[ -z $2 ]] && file_local_base=temp
+
+    temp_local=$file_local_base
+    while [[ -d "$app_root/$temp_local" ]]; do
+        temp_local=$file_local_base${i}
+        ((i++))
+    done
+
+    echo $temp_local
+}
+
+multi_temp "$@"

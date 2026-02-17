@@ -1,28 +1,46 @@
 if you don't use -*:
-$1,must -> url
-$2 -> music name
+    $1,must -> url
+    $2 -> music name
 
-else:
 -h -> get help
--c -> update system config
--config -> get version
--readme -> edit readme
+-c -> update app config
+-version -> get version
 
 -l -> get video config list
 -a -> add or updata video config
       $2,must -> video config key
-      $3 -> the new name of video config key
-         -> @custom
-            -> $4, must -> exe file path 
+	-> opt
+ 	     -rm $video config key
+             -mv $new video config key
+	     -custom $exe file path 
+	     -set $key in video config [$value for this key]
 -d -> download video
       $2,must -> url
       $3 -> video name
 -u -> upload to music
       $2,must -> vidoe path
       $3 -> music name
-
 -p -> use video config
       $2,must -> video config key
       args....
+-f -> choose video format
+      $2,must -> video format
+      args....
+-pf -> use video config and format
+       $2,must -> video config key
+       $3,must -> video format
+       args....
+-F -> select format list for video
+      $2,must -> video url
+
 notice:
-if use -p $2, it must before every option
+if use -p -f -pf, it must before every option
+
+video_config help:
+name -> video name
+        video_name_allowed -> date,title,custom 
+        (',' can be replaced to any char, 
+        every item must use '@' as head)
+matching -> video loader name
+matching_sub -> sub macthing
+      -> matching_sub_allowed -> url

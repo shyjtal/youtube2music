@@ -2,6 +2,9 @@ dev/bvi
 mcp
 op
 tool/e2s
+tool/multi_file
+tool/config_opt
 brew/ffmpeg
 brew/yt-dlp
 brew/python3
+brew/AtomicParsley

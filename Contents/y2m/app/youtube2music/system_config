@@ -1,0 +1,5 @@
+version=2
+git_repo=youtube2music
+video_name_allowed=date,title,custom
+local_path=Library/Application Support/com.shijitao.youtube2music
+music_path=Music/Music/Media.localized/Music
