@@ -1,0 +1,21 @@
+#!/bin/sh
+
+INPUT="$1"
+
+# 码率
+V_BITRATE=$(ffmpeg -i "$INPUT" 2>&1 | grep "Video:" | sed -E 's/.* ([0-9]+) kb\/s.*/\1/')
+A_BITRATE=$(ffmpeg -i "$INPUT" 2>&1 | grep "Audio:" | sed -E 's/.* ([0-9]+) kb\/s.*/\1/')
+
+# 分辨率
+WIDTH=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 "$INPUT")
+HEIGHT=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 "$INPUT")
+
+echo "Video bitrate: ${V_BITRATE}k"
+echo "Audio bitrate: ${A_BITRATE}k"
+echo "Resolution: ${WIDTH} : ${HEIGHT}"
+
+touch $temp/media_info
+echo "vb=${V_BITRATE}k" > $temp/media_info
+echo "ab=${A_BITRATE}k" >> $temp/media_info
+echo "wr=${WIDTH}" >> $temp/media_info
+echo "hr=${HEIGHT}" >> $temp/media_info

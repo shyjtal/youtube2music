@@ -1,22 +1,31 @@
 config_app=txt
 video_config_app=txt
+cookies_from_browser=safari
 
 default=unknown
 auto_compress=true
 compress_param=b128
-cookies_from_browser=safari
+auto_delete_original=false
 
 override=false
 like_local_select=true
 
 music_img_path=/Users/shijitao/Pictures/music
 img_trash=true
+compress_artwork=true
+artwork_compress_param=j50
+auto_delete_original_artwork=true
+
+open_dir=true
 
 exe_py=python3
 
-# for video -> v+a
+# video code: mix -> v+a, solo -> v
+
 load_code_bilibili_audio=30232
 load_code_bilibili_video=30064
-# load_code_youtube_audio=233
+video_lode_method_bilibili=mix
+
 load_code_youtube_audio=140
 load_code_youtube_video=137
+video_lode_method_youtube=mix

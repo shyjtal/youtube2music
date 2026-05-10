@@ -4,4 +4,5 @@ brew/imagemagick
 brew/exiftool
 tool/resolve_alias
 tool/multi_file
+tool/e2s
 op

@@ -1,4 +1,6 @@
-compress_mode=$1 && compress_para=$2
+#!/bin/sh
+
+compress_mode=$1 && compress_para="$2"
 o_path="$3" && d_path="$4"
 file_name="$(basename "$o_path")"
 media_type=".${file_name##*.}"
@@ -7,17 +9,47 @@ media_type=$(echo "$media_type" | tr '[:upper:]' '[:lower:]')
 if [ -z "$d_path" ]; then
     d_path="$(dirname "$o_path")/${file_name%.*}${compress_mode}$compress_para$media_type"
 elif [ -d "$d_path" ]; then
-    d_path="$d_path/${file_name%.*}${compress_mode}$compress_para$media_type"
+    if [[ $compress_mode == "-preset" ]]; then
+        d_path="$d_path/${file_name%.*}${compress_mode}$media_type"
+    else
+        d_path="$d_path/${file_name%.*}${compress_mode}$compress_para$media_type"
+    fi
 fi
 
 if [[ $media_type == '.mp4' || $media_type == '.mov' ]]; then
+    [[ $compress_mode == '-preset' ]] && ./libexec/video_info "$compress_para" || ./libexec/video_info "$o_path"
+    source $tp/e2s $temp/media_info
+    ./libexec/media_time "$o_path" && source $tp/e2s $temp/media_time && media_time_old=$md
+    [[ $auto_encoder_accelerate == "true" ]] && h264_encoder=$h264_encoder_acc || h264_encoder=$h264_encoder_universal
     if [[ $compress_mode == '-c' ]]; then
-        ffmpeg -i "$o_path" -vcodec libx264 -crf "$compress_para" -preset fast -acodec aac -b:a 128k "./$temp/$file_name"
+        h264_encoder=$h264_encoder_universal
+        ffmpeg -i "$o_path" \
+        -vcodec $h264_encoder -crf "$compress_para" \
+        -acodec aac -b:a $ab \
+        -preset slow \
+        "./$temp/$file_name"
     elif [[ $compress_mode == '-b' ]]; then
-        ffmpeg -i "$o_path" -c:v h264_videotoolbox -b:v "${compress_para}M" -c:a aac -b:a 128k "./$temp/$file_name"
+        if (( $(echo "$compress_para >= 0.01 && $compress_para < 1" | bc -l) )); then
+            vb=${vb%k} && vb=$(echo "$vb * $compress_para" | bc) && vb="${vb}k"
+        elif (( $(echo "$compress_para >= 1 && $compress_para <= 10" | bc -l) )); then
+            vb=$(echo "$compress_para * 1000" | bc) && vb="${vb}k"
+        else
+            echo "compress_para($compress_para) false, it must from 0.01 to 10" && exit
+        fi
+        ffmpeg -i "$o_path" \
+        -c:v $h264_encoder -b:v $vb \
+        -c:a aac -b:a $ab \
+        -preset slow "./$temp/$file_name"
+    elif [[ $compress_mode == '-preset' ]]; then
+        ffmpeg -i "$o_path" \
+        -vf "scale=${wr}:${hr}:flags=$video_scale_flags" \
+        -c:v $h264_encoder -b:v $vb \
+        -c:a aac -b:a $ab \
+        -preset slow "./$temp/$file_name"
     else
         echo "Unsupported compress mode: $compress_mode" && exit
     fi
+    ./libexec/media_time "./$temp/$file_name" && source $tp/e2s $temp/media_time && media_time_new=$md
 elif  [[ $media_type == '.m4a' || $media_type == '.mp3' ]]; then
     if [[ $compress_mode == '-b' ]]; then
         ffmpeg -i "$o_path" -vn -c:a aac -b:a ${compress_para}k -f ipod "./$temp/$file_name"
@@ -112,4 +144,7 @@ else
 fi
 
 exiftool -TagsFromFile "$o_path" -all:all -overwrite_original "./$temp/$file_name"
+if [[ ! -z $media_time_old ]]; then
+    [[ $media_time_old != $media_time_new ]] && exit
+fi
 mv "./$temp/$file_name" "$d_path"

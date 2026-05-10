@@ -1,13 +1,21 @@
-config_default_app=TextEdit
-readme_default_app=vscode
+name_config_app=txt
+name_readme_app=vcd
 
-defalut_tile_out=_app
-defalut_tile_in=_default_app
+ext_md_app=vcd
+
+# for name_symbol
 auto_lower=true
+# name_first=true
+unix_exec_default_app=txt
 
-#app_key=vaule
-app_vscode=Visual Studio Code
+# app_key=vaule
+app_vcd=Visual Studio Code
 app_txt=TextEdit
 app_qt=QuickTime Player
 app_wps=wpsoffice
 app_ps=Photos
+app_pv=PreView
+app_dio=draw.io
+app_word=Microsoft Word
+app_web=Safari
+

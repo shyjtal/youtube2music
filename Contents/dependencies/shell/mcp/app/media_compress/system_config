@@ -1,2 +1,5 @@
-version=2.0
+version=2.2
 git_repo=MediaCompress
+
+h264_encoder_acc=h264_videotoolbox
+h264_encoder_universal=libx264

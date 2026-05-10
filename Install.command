@@ -1,4 +1,5 @@
 #!/bin/bash
+
 if ! xcode-select -p &>/dev/null; then
     echo "Install Xcode Command Line Tools ..."
     xcode-select --install
@@ -6,6 +7,7 @@ fi
 
 # 获取脚本当前所在的目录（保证路径正确）
 script_dir="$(cd "$(dirname "$0")" && pwd)"
+export install_dir="$script_dir"
 file_name=$(basename "$script_dir")
 
 if [[ -f "$script_dir/Resources/brew/homebrew.sh" ]]; then

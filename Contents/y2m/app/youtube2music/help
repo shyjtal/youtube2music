@@ -7,6 +7,11 @@ if you don't use -*:
 -version -> get version
 
 -l -> get video config list
+      $video_config -> list this alurm
+            $media_name -> list this media(fuzzy select)
+-o -> $video_config -> open this alurm dir
+            $media_name -> open this media(fuzzy select)
+
 -a -> add or updata video config
       $2,must -> video config key
 	-> opt
@@ -14,12 +19,19 @@ if you don't use -*:
              -mv $new video config key
 	     -custom $exe file path 
 	     -set $key in video config [$value for this key]
+
 -d -> download video
       $2,must -> url
-      $3 -> video name
+      $3 -> download path(dir or file(no have .$media_type))
+-d@a -> force download audio
+        equals to -d
+-d@v -> force download video
+        equals to -d
+
 -u -> upload to music
       $2,must -> vidoe path
       $3 -> music name
+
 -p -> use video config
       $2,must -> video config key
       args....
@@ -30,8 +42,11 @@ if you don't use -*:
        $2,must -> video config key
        $3,must -> video format
        args....
+       
 -F -> select format list for video
       $2,must -> video url
+      $3 -> $load_code // select format for this load_code
+            ${load_code}- // select format list for this load_code with like select
 
 notice:
 if use -p -f -pf, it must before every option

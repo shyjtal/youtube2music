@@ -1,0 +1,15 @@
+#!/bin/bash
+
+[[ -z $2 ]] && ls "$local_path"/video_configs && exit
+[[ -n $3 ]] && list_dir=*$3*
+[[ -f "$local_path"/video_configs/"$2" ]] && source "$tp"/e2s "$local_path/video_configs/$2" || exit
+[[ $defalut_option == "full" ]] && list_dir_base="$HOME/$music_path/$artist/$album/"
+[[ $defalut_option == "-d" ]] && list_dir_base="$output_path/"
+
+[[ $1 == -l ]] && cd "$list_dir_base" && list_dir_base=./ && list_opt=ls || list_opt=$ap/op   
+[[ $1 == -l && -n $3 ]] && unset list_dir_base
+[[ -n $3 && -z $(ls "$list_dir_base"$list_dir) ]] && echo "can't find" && exit
+file_local=$(ls "$list_dir_base"$list_dir)
+[[ $1 == -o && -n $3 &&! -f "$file_local" ]] && echo "too many media" && exit
+
+$list_opt "$list_dir_base"$list_dir

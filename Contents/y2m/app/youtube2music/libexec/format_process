@@ -1,0 +1,11 @@
+#!/bin/bash
+
+select_url="$1"
+select_code="$2"
+
+if [[ -z $select_code ]]; then
+        yt-dlp -F $select_url
+else
+    [[ $select_code == *- ]] && select_code="${select_code%%-}" && select_like=true
+    [[ $select_like == true ]] && yt-dlp -F $select_url | grep -E "$select_code( |-)" || yt-dlp -F $select_url | grep -E ^$select_code'[[:space:]]'
+fi

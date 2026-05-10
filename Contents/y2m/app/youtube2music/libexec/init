@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [[ $1 != "update" ]]; then
     cookies_from_browser=safari
@@ -8,6 +8,7 @@ if [[ $1 != "update" ]]; then
     cp -r $HOME/sh/app/youtube2music/resources/customs "$local_path"/
 fi
 
+brew upgrade yt-dlp
 mkdir -p $HOME/.config/yt-dlp
 touch $HOME/.config/yt-dlp/config
 echo "--cookies-from-browser $cookies_from_browser" > $HOME/.config/yt-dlp/config

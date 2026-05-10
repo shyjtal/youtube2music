@@ -1,10 +1,10 @@
 config_app=txt
 
 default_compress=b
-default_param=4
+default_param=0.5
 
 default_compress_mov=b
-default_param_mov=4
+default_param_mov=0.5
 
 default_compress_mp4=c
 default_param_mp4=26
@@ -33,3 +33,7 @@ default_param_gif=0.7
 protect_dim_gif=0
 forbid_dim_gif=0
 
+# mcp will auto device if accelerat
+auto_encoder_accelerate=true
+
+video_scale_flags=lanczos

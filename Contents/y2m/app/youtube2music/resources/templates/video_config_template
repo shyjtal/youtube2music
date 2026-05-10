@@ -3,13 +3,20 @@ album=u
 composer=u
 artwork=/Users/shijitao/Pictures/music/u.png
 output_path=/Users/shijitao/Desktop
-year=2025
+year=2026
 genre=Other
 medium=audio
 volume=1.0
 auto_compress=true
 compress_param=b128
 name=@date @title
-matching=u,u
-matching_sub=@url:key
 open_dir=true
+matching=u,u
+
+# @url:$key
+# matching_sub=@url:short
+
+# download_code=140-1
+# download_code_backup=140-1
+# video_code=solo
+# download_code_video=95-2

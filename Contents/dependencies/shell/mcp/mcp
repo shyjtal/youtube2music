@@ -1,16 +1,19 @@
-export PATH="$HOME/sh/tools:$PATH"
-export PATH="$HOME/sh:$PATH"
-cd ~/sh/app/media_compress
-source e2s system_config && source e2s config 
+#!/bin/sh
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+export tp="$SCRIPT_DIR/tools"
+export ap="$SCRIPT_DIR"
+cd "$SCRIPT_DIR"/app/media_compress
+source "$tp"/e2s config && source "$tp"/e2s system_config
 
 if [[ $1 == -c ]]; then
-    op config $config_app
+    $ap/op config $config_app
 elif [[ $1 == -h ]]; then
     cat help
 elif [[ $1 == -version ]]; then
      echo $version
 else
-    export temp=$(multi_file) && mkdir $temp
+    export temp=$($tp/multi_file) && mkdir $temp
     ./preprocess "$@"
     rm -r $temp
 fi

@@ -1,0 +1,13 @@
+#!/bin/sh
+
+INPUT="$1"
+
+# 时间
+duration=$(ffprobe -v error \
+  -show_entries format=duration \
+  -of default=noprint_wrappers=1:nokey=1 \
+  "$INPUT")
+duration=${duration%.*}
+
+touch $temp/media_time
+echo "md=${duration}" >> $temp/media_time

@@ -11,17 +11,27 @@ open_file() {
     $open_opt"$resolve_app" "$open_file"
 }
 
-if [[ -z $2 ]]; then
-    file_name=$(basename "$1")
-    
-    file_name="${file_name%.*}"
+file_name=$(basename "$1")
+name="${file_name%.*}"
+ext="${file_name#*.}"
+[[ "$file_name" != *.* ]] && unset ext
 
-    [[ $auto_lower=="true" ]] && file_name=$(echo "$file_name" | tr '[:upper:]' '[:lower:]')
+if [[ -z $2 ]]; then
     
-    open_app_auto="$file_name$defalut_tile_out"
-   
-    [[ -z ${!open_app_auto} ]] && open_app_auto="$file_name$defalut_tile_in"
+    [[ $auto_lower=="true" ]] && name=$(echo "$name" | tr '[:upper:]' '[:lower:]')
+    
+    name_config=${name_symbol}${name}_app
+    open_app_auto_name=${!name_config}
+
+    ext_config=${ext_symbol}${ext}_app
+    open_app_auto_ext=${!ext_config}
+
+    [[ -z $open_app_auto_name ]] && open_app_auto_name=$open_app_auto_ext
+    [[ -z $open_app_auto_ext ]] && open_app_auto_ext=$open_app_auto_name
+    [[ $name_first == "true" ]] && open_app_auto=$open_app_auto_name || open_app_auto=$open_app_auto_ext
 fi
 
-[[ -n $open_app_auto ]] && open_app_=${!open_app_auto} || open_app_="$2"
+[[ -n $open_app_auto ]] && open_app_=$open_app_auto || open_app_="$2"
+[[ -x "$1" && -f "$1" && -z $2 && -z $ext ]] && open_app_=$unix_exec_default_app
+
 open_file "$1" "$open_app_"

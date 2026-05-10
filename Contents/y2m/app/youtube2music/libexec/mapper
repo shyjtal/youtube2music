@@ -1,12 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
-source e2s $temp/video_info
 [[ $platform == "youtube" ]] && defalut_matching_sub=@url:watch || defalut_matching_sub=@url:video
 
-for file in $HOME/"$local_path"/video_configs/*; do  
+for file in "$local_path"/video_configs/*; do  
   unset matching && unset matching_sub
   filename=$(basename "$file")
-  source e2s $HOME/"$local_path"/video_configs/$filename
+  source "$tp"/e2s "$local_path"/video_configs/$filename
   IFS=',' read -ra matching <<< "$matching"
   [[ -z $matching_sub ]] && matching_sub=$defalut_matching_sub
   matching_sub_k="${matching_sub%%:*}" && matching_sub_v="${matching_sub#*:}"
@@ -14,13 +13,13 @@ for file in $HOME/"$local_path"/video_configs/*; do
 
   for item in "${matching[@]}"; do
     if [[ "$bv_up" == $item && "$url" == *$matching_sub_v* ]]; then
-        cp $HOME/"$local_path"/video_configs/$filename ./$temp/video_config
+        cp "$local_path"/video_configs/$filename ./video_config
         if [[ $name == *@custom* ]]; then
-            filename=$(basename $HOME/"$local_path"/customs/$filename*) && ext="${filename##*.}"
-            cp $HOME/"$local_path"/customs/$filename ./$temp/custom.$ext
+            filename=$(basename "$local_path"/customs/$filename*) && ext="${filename##*.}"
+            cp "$local_path"/customs/$filename custom.$ext
             exe_app=$(eval "echo \$exe_$ext")
-            echo "$exe_app $HOME/"$local_path"/customs/$filename \"$bv_title\"" > ./$temp/custom_command.sh
-            chmod +x ./$temp/custom_command.sh
+            echo "$exe_app "./custom.$ext" \"$bv_title\"" > custom_command.sh
+            chmod +x custom_command.sh
         fi
         exit;
     fi

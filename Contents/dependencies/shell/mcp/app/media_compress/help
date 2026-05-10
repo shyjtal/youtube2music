@@ -2,8 +2,8 @@ help -> mc -h
 config -> mc -c
 compress -> mc [${compress_mode}${compress_param}] o_path(file / dir) [d_path]
                 
-mov:    c[23-40], b(fast, recommend)[23-40]
-mp4:    c(recommend)[23-40], b[23-40]
+mov:    c[23-40], b(fast, recommend)[0.1-0.9]
+mp4:    c(recommend)[23-40], b[0.1-0.9]
 
 m4a:    b[64, 128]
 

@@ -1,17 +1,21 @@
 #!/bin/bash
-export PATH="$HOME/sh/tools:$PATH"
-export PATH="$HOME/sh:$PATH"
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+export tp="$SCRIPT_DIR/tools"
+export ap="$SCRIPT_DIR"
+
 [[ -e "$1" ]] && abs_path="$(realpath "$1")"
 [[ -z $1 ]] && abs_path=$PWD
-cd $HOME/sh/app/open_pro
-source e2s config && source e2s system_config
+
+cd "$SCRIPT_DIR"/app/open_pro
+source "$tp"/e2s config && source "$tp"/e2s system_config
 
 if [[ $1 == -version ]]; then
     echo $version
 elif [[ $1 == -h ]]; then
     cat help
 elif [[ $1 == -c ]]; then
-    op config
+    $ap/op config
 elif [[ $1 == -* ]]; then
     ./bin/cmd "$@"
 else

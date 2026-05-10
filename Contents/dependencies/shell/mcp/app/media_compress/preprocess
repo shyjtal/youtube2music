@@ -1,9 +1,14 @@
 #!/bin/sh
 
 if [ -e "$1" ]; then
-    dir_path=$($HOME/sh/tools/resolve_alias "$1") && out_path="$2"
+    dir_path=$($tp/resolve_alias "$1") && out_path="$2"
+elif [[ $1 == -preset && -e "$2" && -e "$3" ]]; then
+    # must brfore than 'elif [[ -e "$2" && $1 == -* ]]; then'
+    dir_path=$($tp/resolve_alias "$3") && out_path="$4"
+    compress_mode_src=$1
+    compress_mode="${compress_mode_src:1}" && compress_param=$($tp/resolve_alias "$2")
 elif [[ -e "$2" && $1 == -* ]]; then
-    dir_path=$($HOME/sh/tools/resolve_alias "$2") && out_path="$3"
+    dir_path=$($tp/resolve_alias "$2") && out_path="$3"
     compress_mode_src=$1
     compress_mode="${compress_mode_src:1:1}" && compress_param="${compress_mode_src:2}"
 elif [[ $1 == -* && -z $2 ]]; then
@@ -35,6 +40,6 @@ for media_type in $(find "$dir_path" -type f ! -name '.*' | awk -F. '/\./ {print
     for file in "$dir_path"/*; do
         file_media_type="${file##*.}"
         file_media_type=$(echo "$file_media_type" | tr '[:upper:]' '[:lower:]')
-        [[ -f "$file" && $file_media_type == $media_type ]] && ./app -${compress_mode} ${compress_param} "$file" "$out_path"
+        [[ -f "$file" && $file_media_type == $media_type ]] && ./app -${compress_mode} "${compress_param}" "$file" "$out_path"
     done    
 done

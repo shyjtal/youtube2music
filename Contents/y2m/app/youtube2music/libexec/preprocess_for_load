@@ -1,0 +1,22 @@
+#!/bin/bash
+set -f  # 禁用路径扩展
+
+[[ -z $1 ]] && echo "no option" && exit
+[[ $1 == -p && -z $2 ]] && echo "use -p but don't choose video config" && exit
+[[ $1 == -f ]] && export load_code_force=$2
+[[ $3 == -p ]] && video_config=$4
+[[ $1 == -p ]] && video_config=$2
+
+[[ -z $video_config ]] && path_config=$default || export path_config=$video_config
+[[ ! -f "$local_path"/video_configs/$path_config ]] && echo "video config isn't existing" && exit
+cp "$local_path"/video_configs/$path_config ./$temp/video_config
+
+if [[ $1 != -* || $1 == -d* || $1 == -u ]]; then
+    ./app "$@"
+elif [[ $3 == -p ]]; then
+    ./app "${@:5}"
+else
+    ./app "${@:3}"
+fi
+
+set +f

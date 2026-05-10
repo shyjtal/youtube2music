@@ -1,4 +1,5 @@
 # youtube2music
+Turn any internet audio into Apple Music albums.
 
 # Install
 
@@ -115,7 +116,6 @@
 - **feature**:
     - optimized the efficiency when use command contained -d
    
-
 # version 1.6
 - **date: 2025/08/07**
 - **env: macOS 15**
@@ -167,25 +167,25 @@
 
 # version 1.7.3
 - **date: 2025/09/17**
-- **env: macOS 16**
+- **env: macOS 26**
 - **feature**:
     - fix a bug that cannot update media with special name to Apple Music
 
 # version 1.7.4
 - **date: 2025/09/18**
-- **env: macOS 16**
+- **env: macOS 26**
 - **feature**:
     - fix a bug that cannot choose which config be used (-p) when audio matching with config
 
 # version 1.8
 - **date: 2025/09/19**
-- **env: macOS 16**
+- **env: macOS 26**
 - **feature**:
     - update a video configs (mapper_sub) to mapper different config by url for same audio author
 
 # version 1.8.1
 - **date: 2025/09/20**
-- **env: macOS 16**
+- **env: macOS 26**
 - **feature**:
     - add a serial configurations in config to self-define load code for audio and video
     - optimized the efficiency for using mapper opration
@@ -193,7 +193,7 @@
 
 # version 2
 - **date: 2026/02/17**
-- **env: macOS 16**
+- **env: macOS 26**
 - **feature**:
     - deliver a secure application permission file system to prevent developer-defined configurations from being overwritten
     - deliver a multi-users file arhitecture to separate app and user data
@@ -203,3 +203,131 @@
     - users can choose download format for video
     - add a new configuration to auto open dir when use -d
     - add a new feature to allow user to upload video to Apple Music (cannot sync to cloud)
+
+# version 2.0.1
+- **date: 2026/02/18**
+- **env: macOS 26**
+- **feature**:
+    - deliver a secure feature by add a vid for every music to prevent it been overwritten when -u
+    - optimized the efficiency for opt incluing -u
+
+# version 2.0.2
+- **date: 2026/03/09**
+- **env: macOS 26**
+- **feature**:
+    - optimized the arhitecture and using for local file (Application Support)
+
+# version 2.1
+- **date: 2026/03/10**
+- **env: macOS 26**
+- **feature**:
+    - you can specify the download format by -d@v and -d@a
+    - allow safely specifying the download path and output filename when use -d
+
+# version 2.1.1
+- **date: 2026/03/11**
+- **env: macOS 26**
+- **feature**:
+    - optimized the arhitecture of resources
+
+# version 2.1.2
+- **date: 2026/03/12**
+- **env: macOS 26**
+- **feature**:
+    - add a configuration named video_code (mix or solo) in config and video config to decide the download code of video whether add with the download code of audio
+
+# version 2.2
+- **date: 2026/03/14**
+- **env: macOS 26**
+- **feature**:
+    - optimized the implementation of the feature that self-define media name
+    - allow users to use self-define name just like -u when -d
+    - add a new allowed self-define name, named up (media uploader)
+
+# version 2.2.1
+- **date: 2026/03/15**
+- **env: macOS 26**
+- **feature**:
+    - add a new onfiguration in video config to allow user to set defalut option (-d, full)
+
+# version 2.2.2
+- **date: 2026/03/15**
+- **env: macOS 26**
+- **feature**:
+    - list option (-l [$video_config] [$like_name]) is appling to new defalut option (-d, full)
+    - fix a bug when force load code (-f $lode_code)
+
+# version 2.3
+- **date: 2026/03/17**
+- **env: macOS 26**
+- **feature**:
+    - Consistent CLI/GUI behavior via environment-independent execution
+
+# version 2.3.1
+- **date: 2026/04/13**
+- **env: macOS 26**
+- **feature**:
+    - fix a bug that cannot load full media name when title have space
+
+# version 2.3.2
+- **date: 2026/04/13**
+- **env: macOS 26**
+- **feature**:
+    - when update video config name, music image name will auto update(if use -set to add managenr)
+    - add an apply the mp3 media for uploaing to music (use -u)
+
+# version 2.4
+- **date: 2026/04/23**
+- **env: macOS 26**
+- **feature**:
+    - add a new feature to list available format for downloading media using exactly or like select
+    - add a new configuration named download_code_backup in video config to allow user set a backup download code, when don't use force code, app will auto choose backup download code to continue if download code don't has
+
+# version 2.4.1
+- **date: 2026/04/13**
+- **env: macOS 26**
+- **feature**:
+    - fix a bug that cannot set artwork for video config (use -a $video_config -set artwork $img_path)
+
+# version 2.5
+- **date: 2026/04/28**
+- **env: macOS 26**
+- **feature**:
+    - update the operation pipeline of this application to download and upload media safely
+    - rebuilt the system with priority given to force code (-f), video config, and config
+    - allows user to set different video load method for different media sources in config
+    - allows user to set video load method for this alurm in video config
+    - add a new feature that automatically checks artwork path to determine whether to upload media
+    - add a new feature that automatically checks mix load to determine whether to download media
+
+# version 2.5.1
+- **date: 2026/05/02**
+- **env: macOS 26**
+- **feature**:
+    - update the template of video config to contain new features
+    - add a new feature that allow user to determine whether to create video config when it isn't existing (-a $video_config)
+
+# version 2.5.2
+- **date: 2026/05/05**
+- **env: macOS 26**
+- **feature**:
+    - fix a bug that the format list can't be displayed correctly during fuzzy queries when other fields contain $select_load.
+
+# version 2.5.3
+- **date: 2026/05/06**
+- **env: macOS 26**
+- **feature**:
+    - add a serial configurations in config for allow user to set default auto compress actions when set artwork
+    - improved the stability of set opration (-a $video_config -set $config_key $config_value)
+
+# version 2.5.4
+- **date: 2026/05/07**
+- **env: macOS 26**
+- **feature**:
+    - add a new feature that allow user to open media dir or file (-o)
+
+# Future Features
+ - auto check if existing when has any download
+ - intelligently adjust the volume to make it more balanced
+ - auto choose download code in config when it isn't exsiting in video config
+ - rollback apply for upload option

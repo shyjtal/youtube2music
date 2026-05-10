@@ -1,0 +1,25 @@
+#!/bin/bash
+
+source $tp/e2s ./video_info && source $tp/e2s ./video_config
+[[ -z $1 ]] && title="$bv_title" || title="$1"
+[[ -z $name ]] && name=@title
+
+IFS=',' read -ra video_name_allowed <<< "$video_name_allowed"
+IFS='@' read -ra name_parts <<< "${name:1}"
+
+for i in "${!name_parts[@]}"; do
+    found_in_allowed=false && name_part=${name_parts[$i]}
+    for item in "${video_name_allowed[@]}"; do
+        [[ "$name_part" == $item* ]] && found_in_allowed=true && break
+    done
+    [[ $found_in_allowed != "true" ]] && echo "name part $name_part donot exist in video_name_allowed" && exit;
+    case $item in
+        date)   item_="${bv_release:0:10}" ;;
+        title)  item_="$title" ;;
+        up)  item_="$bv_up" ;;
+        custom) item_=$(./custom_command.sh "$title") ;;
+    esac
+    auto_define_title_name="$auto_define_title_name""$item_""${name_part#"$item"}"
+done
+
+echo "$auto_define_title_name"

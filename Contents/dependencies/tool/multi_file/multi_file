@@ -2,16 +2,29 @@ multi_temp() {
     
     local app_root=$1
     local file_local_base=$2
+    local file_type=$3
+    local file_ext=$4
 
-    [[ -z $1 ]] && app_root="$(pwd)"
-    [[ -z $2 ]] && file_local_base=temp
+    [[ -z $1 || $1 == "None" ]] && app_root="$(pwd)"
+    [[ -z $2 || $2 == "None" ]] && file_local_base=temp
+    [[ -z $3 || $3 == "None" ]] && file_type="-d"
+    [[ -z $4 || $4 == "None" ]] && file_ext="txt"
 
     temp_local=$file_local_base
-    while [[ -d "$app_root/$temp_local" ]]; do
-        temp_local=$file_local_base${i}
-        ((i++))
-    done
 
+    if [[ $file_type == -d ]]; then
+        while [[ -d "$app_root/$temp_local" ]]; do
+            temp_local=$file_local_base${i}
+            ((i++))
+        done
+    elif [[ $file_type == -f ]]; then
+        while [[ -f $app_root/$temp_local.$file_ext ]]; do
+            temp_local=$file_local_base${i}
+            ((i++))
+        done
+    else
+        echo "file type false"
+    fi
     echo $temp_local
 }
 

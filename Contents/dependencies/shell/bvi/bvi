@@ -1,10 +1,15 @@
 #!/bin/bash
-if [[ -d "$HOME/sh/app/bilibili info" ]]; then
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+export tp="$SCRIPT_DIR/tools"
+export ap="$SCRIPT_DIR"
+
+if [[ -d "$ap/app/bilibili info" ]]; then
     app_type=app
-    cd "$HOME/sh/app/bilibili info"
+    cd "$ap/app/bilibili info"
 else
     app_type=dev
-    cd "$HOME/sh/dev/bilibili info"
+    cd "$ap/dev/bilibili info"
 fi
 
 if [[ $app_type == app ]]; then
