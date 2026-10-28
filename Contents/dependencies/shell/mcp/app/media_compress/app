@@ -20,6 +20,7 @@ if [[ $media_type == '.mp4' || $media_type == '.mov' ]]; then
     [[ $compress_mode == '-preset' ]] && ./libexec/video_info "$compress_para" || ./libexec/video_info "$o_path"
     source $tp/e2s $temp/media_info
     ./libexec/media_time "$o_path" && source $tp/e2s $temp/media_time && media_time_old=$md
+
     [[ $auto_encoder_accelerate == "true" ]] && h264_encoder=$h264_encoder_acc || h264_encoder=$h264_encoder_universal
     if [[ $compress_mode == '-c' ]]; then
         h264_encoder=$h264_encoder_universal
@@ -40,12 +41,28 @@ if [[ $media_type == '.mp4' || $media_type == '.mov' ]]; then
         -c:v $h264_encoder -b:v $vb \
         -c:a aac -b:a $ab \
         -preset slow "./$temp/$file_name"
+    elif [[ $compress_mode == '-s' ]]; then
+        wide=$(echo "$wr * $compress_para" | bc -l | xargs printf "%.0f")
+        video_bigrate=$(echo "${vb%%k} * $compress_para * $compress_para * $video_bitrate_compensate" | bc -l | xargs printf "%.0f")
+        echo Target Resolution: $wide "*"  $(echo "$hr * $compress_para" | bc -l | xargs printf "%.0f")
+        echo Target Video Bigrate: ${video_bigrate}k
+
+        ffmpeg -hwaccel videotoolbox \
+        -i "$o_path" \
+        -vf "scale=${wide}:-2:flags=$video_scale_flags" \
+        -c:v $h264_encoder \
+        -b:v ${video_bigrate}k \
+        -c:a copy \
+        "./$temp/$file_name"
     elif [[ $compress_mode == '-preset' ]]; then
         ffmpeg -i "$o_path" \
         -vf "scale=${wr}:${hr}:flags=$video_scale_flags" \
-        -c:v $h264_encoder -b:v $vb \
-        -c:a aac -b:a $ab \
-        -preset slow "./$temp/$file_name"
+        -c:v $h264_encoder \
+        -b:v $vb \
+        -c:a aac \
+        -b:a $ab \
+        -preset slow \
+        "./$temp/$file_name"
     else
         echo "Unsupported compress mode: $compress_mode" && exit
     fi
@@ -145,6 +162,6 @@ fi
 
 exiftool -TagsFromFile "$o_path" -all:all -overwrite_original "./$temp/$file_name"
 if [[ ! -z $media_time_old ]]; then
-    [[ $media_time_old != $media_time_new ]] && exit
+    [[ $media_time_old != $media_time_new ]] && echo "midia time false" && exit
 fi
 mv "./$temp/$file_name" "$d_path"

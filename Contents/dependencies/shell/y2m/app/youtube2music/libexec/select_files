@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[[ -z $2 ]] && ls "$local_path"/video_configs && exit
+[[ -z $2 ]] && echo "false option (y2m -o)" && exit
 [[ -n $3 ]] && list_dir=*$3*
 [[ -f "$local_path"/video_configs/"$2" ]] && source "$tp"/e2s "$local_path/video_configs/$2" || exit
 [[ $defalut_option == "full" ]] && list_dir_base="$HOME/$music_path/$artist/$album/"

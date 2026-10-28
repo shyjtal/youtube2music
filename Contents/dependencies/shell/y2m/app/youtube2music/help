@@ -13,12 +13,12 @@ if you don't use -*:
             $media_name -> open this media(fuzzy select)
 
 -a -> add or updata video config
-      $2,must -> video config key
-	-> opt
- 	     -rm $video config key
-             -mv $new video config key
-	     -custom $exe file path 
-	     -set $key in video config [$value for this key]
+      $2 -> video config key (if null, echo template)
+	$2 -> opt ->
+ 	      rm $video config key
+            mv $new video config key
+	      custom $exe file path 
+	      set $key in video config [$value for this key]
 
 -d -> download video
       $2,must -> url

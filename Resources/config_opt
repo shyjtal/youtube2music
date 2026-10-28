@@ -5,7 +5,9 @@ config_opt() {
     local config_value=$3
 
     if [[ $# -ge 3 && -z $3 ]]; then
-        sed -i '' "/^$config_key=/d" "$config_file"
+        # sed -i '' "/^$config_key=/d" "$config_file"
+        awk -v k="$config_key" 'index($0, k"=") != 1' "$config_file" > "$config_file.tmp" \
+    && mv "$config_file.tmp" "$config_file"
     elif [[ -n $config_value ]]; then
         if grep -q "^$config_key=" "$config_file"; then
             sed -i '' "s|^$config_key=.*|$config_key=$config_value|" "$config_file"
@@ -19,7 +21,10 @@ config_opt() {
 }
 
 if [[ $1 == -h ]]; then
-    cat $HOME/sh/tools/Library/config_opt/help
+    echo "## tool help
+config_opt key -> read
+config_opt key vaule -> set
+config_opt key "" -> remove"
 else
     config_opt "$@"
 fi

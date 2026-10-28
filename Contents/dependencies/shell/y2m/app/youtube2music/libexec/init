@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [[ $app_init_flag == 0 && $1 == init ]]; then
+    ./libexec/update
+    cd dev
+    for d in *; do
+        mv "$d" "$local_path"/
+    done
+    $tp/config_opt ../system_config app_init_flag 1
+    rm -r ../dev
+    echo "success to initialize youtube2music"
+elif [[ $app_init_flag == 1 && $1 == update ]]; then
+    ./libexec/update
+    echo "success to update youtube2music"
+else
+    echo "system error"
+fi

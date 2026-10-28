@@ -3,6 +3,9 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 export tp="$SCRIPT_DIR/tools"
 export ap="$SCRIPT_DIR"
+cd "$SCRIPT_DIR"/app/"BILIBILI INFO"
+source "$tp"/e2s config && source "$tp"/e2s system_config
+export local_path=$HOME/"$local_path"
 
 if [[ -d "$ap/app/bilibili info" ]]; then
     app_type=app
@@ -14,13 +17,13 @@ fi
 
 if [[ $app_type == app ]]; then
     if [ -z $1 ]; then
-        $HOME/Library/"Bilibili Helper"/app
+        "$local_path"/app
     elif [ $1 = "-h" ]; then
         cat help
     elif [ $1 = "-c" ]; then
-        vim $HOME/Library/"Bilibili Helper"/bv
+        $ap/op "$local_path"/bv
     elif [ $1 = "-l" ]; then
-        cat  $HOME/Library/"Bilibili Helper"/bv
+        cat  "$local_path"/bv
     else
         ./app "$@"
     fi

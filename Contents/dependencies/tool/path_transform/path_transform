@@ -1,0 +1,17 @@
+#!/bin/bash
+
+path_transform() {
+    
+    local input_path="$1"
+    local output_path="$1"
+    local base_path="$2"
+    [[ -z $base_path ]] && base_path="$(pwd)"
+    
+    if [[ "$input_path" != /* ]]; then
+        output_path="$base_path/$output_path"
+    fi
+    echo "$output_path"
+}
+
+path_transform "$1" "$2"
+

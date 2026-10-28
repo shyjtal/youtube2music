@@ -2,6 +2,7 @@ name_config_app=txt
 name_readme_app=vcd
 
 ext_md_app=vcd
+ext_ts_app=vcd
 
 # for name_symbol
 auto_lower=true
@@ -18,4 +19,6 @@ app_pv=PreView
 app_dio=draw.io
 app_word=Microsoft Word
 app_web=Safari
-
+app_google=Google Chrome
+app_obsd=Obsidian
+app_idea=IntelliJ IDEA 2025.1

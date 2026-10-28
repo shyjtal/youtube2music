@@ -1,0 +1,9 @@
+#!/bin/bash
+
+target_name="$1"
+
+target_dir="${target_name%/*}"
+target_file="${target_name##*/}"
+
+mkdir -p "$target_dir"
+touch "$target_dir"/"$target_file"

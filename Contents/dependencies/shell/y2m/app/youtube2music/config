@@ -3,6 +3,7 @@ video_config_app=txt
 cookies_from_browser=safari
 
 default=unknown
+# default=nz
 auto_compress=true
 compress_param=b128
 auto_delete_original=false

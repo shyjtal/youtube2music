@@ -53,3 +53,11 @@
 - **feature**:
     - Consistent CLI/GUI behavior via environment-independent execution
     
+
+# version 2.2.1
+- **date: 2026/10/17**
+- **env: macOS 26**
+- **feature**:
+    - add a new compress function that decrease the video resolution by (mcp -s)
+    - add a config named video_bitrate_compensate to protect video when use scale vompress (mcp -s)
+    - fix a bug that video time for round() when extract video infomation

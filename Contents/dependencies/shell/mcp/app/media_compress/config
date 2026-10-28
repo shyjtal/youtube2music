@@ -3,11 +3,17 @@ config_app=txt
 default_compress=b
 default_param=0.5
 
-default_compress_mov=b
-default_param_mov=0.5
+intelligence_video_scale_compress=true
+default_compress_mov=s
+default_param_mov=auto
 
-default_compress_mp4=c
-default_param_mp4=26
+# 1920 -> 1080
+# default_param_mov=0.56
+# 1080->720
+# default_param_mov=0.5625
+
+default_compress_mp4=s
+default_param_mp4=0.5625
 
 default_compress_m4a=b
 default_param_m4a=128
@@ -37,3 +43,7 @@ forbid_dim_gif=0
 auto_encoder_accelerate=true
 
 video_scale_flags=lanczos
+
+# when use "mcp -s? $o_path" for video, auto increase bitrate to protect the frames
+video_bitrate_compensate=1.3
+

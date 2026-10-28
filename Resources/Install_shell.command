@@ -44,7 +44,7 @@ if [ -f "$file_dst" ]; then
         read -r confirm
     fi
 else
-    confirm == "y"
+    confirm="y"
 fi 
 
 if [[ "$confirm" == "y" ]]; then

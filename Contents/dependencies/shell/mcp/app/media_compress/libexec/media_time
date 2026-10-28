@@ -2,12 +2,13 @@
 
 INPUT="$1"
 
-# 时间
 duration=$(ffprobe -v error \
-  -show_entries format=duration \
+  -select_streams v:0 \
+  -show_entries stream=duration \
   -of default=noprint_wrappers=1:nokey=1 \
   "$INPUT")
-duration=${duration%.*}
+
+duration=$(echo "scale=0; ($duration + 0.5) / 1" | bc)
 
 touch $temp/media_time
 echo "md=${duration}" >> $temp/media_time

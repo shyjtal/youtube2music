@@ -62,3 +62,12 @@
 - **env: macOS 26**
 - **feature**:
     - fix a bug that connot forward to open to use default app opening common file
+
+# version 1.1.4
+- **date: 2026/04/21**
+- **env: macOS 26**
+- **feature**:
+    - deliver a new feature that allow user to devide to do not open the file when op $file null
+    
+# in future
+- fuzy open

@@ -1,12 +1,9 @@
 #!/bin/bash
 
+SHELL_DIR=$(pwd)
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 export tp="$SCRIPT_DIR/tools"
 export ap="$SCRIPT_DIR"
-
-[[ -e "$1" ]] && abs_path="$(realpath "$1")"
-[[ -z $1 ]] && abs_path=$PWD
-
 cd "$SCRIPT_DIR"/app/open_pro
 source "$tp"/e2s config && source "$tp"/e2s system_config
 
@@ -19,11 +16,13 @@ elif [[ $1 == -c ]]; then
 elif [[ $1 == -* ]]; then
     ./bin/cmd "$@"
 else
-    if [[ -z $abs_path ]]; then
-        abs_path=$HOME/$1
-        touch $1 && ./app $abs_path
+    if [[ $1 != http* ]]; then
+        abs_path=$($tp/path_transform "$1" "$SHELL_DIR")
+        [[ -e "$abs_path" ]] && abs_path="$(realpath "$abs_path")" || ./libexec/touch_file "$abs_path"
     else
-        [[ ! -e $abs_path ]] && touch $abs_path
-        ./app "$abs_path"  "${@:2}"
+        abs_path="$1"
     fi
+    [[ $app_null_enable == "true" && ${!#} == "null" ]] && exit 
+
+    ./app "$abs_path"  "${@:2}"
 fi

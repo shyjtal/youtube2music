@@ -1,4 +1,4 @@
-version=2.2
+version=2.2.1
 git_repo=MediaCompress
 
 h264_encoder_acc=h264_videotoolbox

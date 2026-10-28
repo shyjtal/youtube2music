@@ -8,13 +8,16 @@ set -f  # 禁用路径扩展
 [[ $1 == -p ]] && video_config=$2
 
 [[ -z $video_config ]] && path_config=$default || export path_config=$video_config
+
 [[ ! -f "$local_path"/video_configs/$path_config ]] && echo "video config isn't existing" && exit
-cp "$local_path"/video_configs/$path_config ./$temp/video_config
+cp "$local_path"/video_configs/$path_config "$temp"/video_config
 
 if [[ $1 != -* || $1 == -d* || $1 == -u ]]; then
     ./app "$@"
 elif [[ $3 == -p ]]; then
     ./app "${@:5}"
+elif [[ $1 == -p && -z $3 ]]; then
+    cat "$temp"/video_config
 else
     ./app "${@:3}"
 fi

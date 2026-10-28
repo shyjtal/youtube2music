@@ -326,8 +326,53 @@ Turn any internet audio into Apple Music albums.
 - **feature**:
     - add a new feature that allow user to open media dir or file (-o)
 
+# version 2.6
+- **date: 2026/05/21**
+- **env: macOS 26**
+- **feature**:
+    - add a new key (@title) of mapper_sub in video configs to mapper different alume by fuzzy matching title for same author
+
+ # version 2.6.1
+- **date: 2026/09/29**
+- **env: macOS 26**
+- **feature**:
+    - optimized the file, option, and logical structure (when use -a)
+
+
+ # version 2.6.2
+- **date: 2026/10/03**
+- **env: macOS 26**
+- **feature**:
+    - fix a bug that cat not print the content of video config (when use y2m -p $video_config)
+
+
+ # version 2.7
+- **date: 2026/10/04**
+- **env: macOS 26**
+- **feature**:
+    - add a new configration in system config (app_init_flag) to make core features can only be used after initialization
+    - fix a bug that list video configs do not use list command (y2m -o)
+    - add a new configuration in video config (nickname) to improve the readability of the display
+    - the display feature can now show more information (artist, album, etc.) when use -l
+
+# version 2.7.1
+- **date: 2026/10/17**
+- **env: macOS 26**
+- **feature**:
+    - No longer needs to be enclosed in "" when entering a media URL
+    - added support for more URL types (https://youtu.be/*)
+    - the cache has been moved to the user data directory
+
+# Tonight Update
+ - fix some bug caused by dependencies
+
 # Future Features
+ - stop download when not matching in video configs
  - auto check if existing when has any download
  - intelligently adjust the volume to make it more balanced
  - auto choose download code in config when it isn't exsiting in video config
  - rollback apply for upload option
+ - auto process url to string
+ - allow input file
+ - auto add artwork by url
+ 
