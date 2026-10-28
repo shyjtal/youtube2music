@@ -1,0 +1,13 @@
+#!/bin/bash
+
+vc_path="$local_path"/video_configs
+
+for f in "$local_path"/video_configs/*; do
+  unset vc_nickname_o
+  vc_name=$(basename "$f")
+  vc_artist=$($tp/config_opt "$f" artist)
+  vc_album=$($tp/config_opt "$f" album)
+  vc_nickname=$($tp/config_opt "$f" nickname)
+  [[ -n $vc_nickname ]] && vc_nickname_o="("$vc_nickname")"
+  echo $vc_name "->" $vc_artist/$vc_album$vc_nickname_o
+done

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+export tp="$SCRIPT_DIR/tools"
+export ap="$SCRIPT_DIR"
+cd "$SCRIPT_DIR"/app/youtube2music
+source "$tp"/e2s system_config
+source "$tp"/e2s config
+export local_path="$HOME/$local_path"
+
+if [[ $1 == "--version" || $1 == -v ]]; then
+    echo $version
+elif [[ $1 == -h ]]; then
+    cat help
+elif [[ $1 == -c ]]; then
+    "$ap"/op config $config_app
+elif [[ $1 == init || $1 == update ]]; then
+    ./libexec/init $1
+elif [[ $1 == -p || $1 == -f || $1 == -d* || $1 == -u || $1 != -* ]]; then
+    export temp="$local_path"/tmp/$("$tp"/multi_file) && mkdir -p "$temp"
+    [[ $1 == -p && $3 == -f ]] && ./libexec/preprocess_for_load -f "$4" -p "$2" "${@:5}" || ./libexec/preprocess_for_load "$@"
+    [[ -d "$temp" ]] && rm -r "$temp"
+else
+    ./app "$@"
+fi

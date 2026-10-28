@@ -1,0 +1,6 @@
+#!/bin/bash
+
+brew upgrade yt-dlp
+mkdir -p $HOME/.config/yt-dlp
+$ap/op $HOME/.config/yt-dlp/config null
+echo "--cookies-from-browser $cookies_from_browser" > $HOME/.config/yt-dlp/config

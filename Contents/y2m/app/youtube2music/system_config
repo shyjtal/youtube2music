@@ -1,0 +1,11 @@
+version=2.7.1
+app_simple_name=y2m
+app_full_name=youtube2music
+
+app_init_flag=1
+git_repo=youtube2music
+local_path=Library/Application Support/com.shyjtal.youtube2music
+
+video_name_allowed=date,title,up,custom
+music_path=Music/Music/Media.localized/Music
+defalut_option=full
